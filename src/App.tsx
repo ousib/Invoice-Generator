@@ -196,7 +196,7 @@ export default function App() {
             </button>
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold">S</div>
-              <h1 className="text-xl font-bold tracking-tight hidden sm:block">SwiftInvoice</h1>
+              <h1 className="text-xl font-bold tracking-tight hidden sm:block">Simple Receipt Generator</h1>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -691,7 +691,7 @@ export default function App() {
             <div className="col-span-1 md:col-span-2">
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold">S</div>
-                <span className="text-xl font-bold">SwiftInvoice</span>
+                <span className="text-xl font-bold">Simple Receipt Generator</span>
               </div>
               <p className="text-slate-500 text-sm max-w-xs">
                 The world's simplest free online invoice generator. Helping small businesses and freelancers get paid faster since 2026.
@@ -720,7 +720,7 @@ export default function App() {
               <span className="ad-label">Advertisement</span>
               <span className="text-center px-4">Leaderboard Ad Space</span>
             </div>
-            <p className="text-slate-400 text-xs">© 2026 SwiftInvoice. All rights reserved.</p>
+            <p className="text-slate-400 text-xs">© 2026 Simple Receipt Generator. All rights reserved.</p>
           </div>
         </div>
       </footer>

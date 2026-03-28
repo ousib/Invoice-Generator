@@ -106,7 +106,7 @@ export default function LandingPage({ onStart }: LandingPageProps) {
             <div>
               <h3 className="text-lg font-bold text-slate-900 mb-2">Is this invoice generator really free?</h3>
               <p className="text-slate-600">
-                Yes, SwiftInvoice is 100% free to use. There are no subscription fees, no "pro" versions, and no watermarks on your downloaded PDFs.
+                Yes, Simple Receipt Generator is 100% free to use. There are no subscription fees, no "pro" versions, and no watermarks on your downloaded PDFs.
               </p>
             </div>
             <div>

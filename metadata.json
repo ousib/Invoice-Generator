@@ -1,5 +1,5 @@
 {
-  "name": "",
-  "description": "",
+  "name": "Simple Receipt Generator",
+  "description": "A clean, fast, and professional receipt and invoice generator for mobile and desktop.",
   "requestFramePermissions": []
 }

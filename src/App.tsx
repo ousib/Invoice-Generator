@@ -125,22 +125,42 @@ export default function App() {
     const toastId = toast.loading('Generating PDF...');
     
     try {
+      // Scroll to top to ensure html2canvas captures correctly
+      window.scrollTo(0, 0);
+      
       // Ensure the element is visible for capture
       const element = invoiceRef.current;
       
       const canvas = await html2canvas(element, {
-        scale: 2,
+        scale: 3, // Higher scale for better quality
         useCORS: true,
         logging: false,
         backgroundColor: '#ffffff',
+        windowWidth: 1200, // Force a consistent width for capture
       });
       
       const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdf = new jsPDF('p', 'mm', 'letter');
       const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      const pdfHeight = pdf.internal.pageSize.getHeight();
       
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      // Calculate dimensions to fit the page while maintaining aspect ratio
+      const imgWidth = pdfWidth;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      
+      // If the image is taller than the page, scale it down
+      let finalWidth = imgWidth;
+      let finalHeight = imgHeight;
+      if (finalHeight > pdfHeight) {
+        finalHeight = pdfHeight;
+        finalWidth = (canvas.width * finalHeight) / canvas.height;
+      }
+
+      // Center the image on the page
+      const xOffset = (pdfWidth - finalWidth) / 2;
+      const yOffset = (pdfHeight - finalHeight) / 2;
+      
+      pdf.addImage(imgData, 'PNG', xOffset, yOffset, finalWidth, finalHeight);
       pdf.save(`${data.type}-${data.invoiceNumber}.pdf`);
       
       toast.success('PDF downloaded successfully!', { id: toastId });
@@ -547,7 +567,7 @@ export default function App() {
           <div className="bg-slate-200 p-4 sm:p-8 rounded-3xl shadow-inner overflow-hidden print:bg-white print:p-0 print:shadow-none">
             <div 
               ref={invoiceRef}
-              className="bg-white w-full aspect-[1/1.414] shadow-2xl p-8 sm:p-16 flex flex-col print:shadow-none print:p-16 print:w-[210mm] print:h-[297mm] mx-auto"
+              className="bg-white w-full aspect-[8.5/11] shadow-2xl p-8 sm:p-16 flex flex-col print:shadow-none print:p-[20mm] print:w-[8.5in] print:h-[11in] mx-auto"
               style={{ fontSize: '13px' }}
             >
               {/* Invoice Header */}

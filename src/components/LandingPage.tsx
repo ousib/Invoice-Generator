@@ -3,15 +3,22 @@ import { CheckCircle2, Zap, ShieldCheck, Globe, ArrowRight } from 'lucide-react'
 
 interface LandingPageProps {
   onStart: () => void;
+  logoSvg?: string;
 }
 
-export default function LandingPage({ onStart }: LandingPageProps) {
+export default function LandingPage({ onStart, logoSvg }: LandingPageProps) {
   return (
     <div className="bg-white no-print">
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-16 pb-24 lg:pt-32 lg:pb-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center">
+            {logoSvg && (
+              <div 
+                className="h-16 w-auto flex justify-center mb-8"
+                dangerouslySetInnerHTML={{ __html: logoSvg }} 
+              />
+            )}
             <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-6xl lg:text-7xl">
               Free Online <span className="text-indigo-600">Invoice Generator</span> <br className="hidden sm:block" />
               for Small Businesses

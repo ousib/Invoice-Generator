@@ -18,6 +18,7 @@ import { cn, CURRENCIES, type InvoiceData, type InvoiceItem } from './lib/utils'
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import LandingPage from './components/LandingPage';
+import { GoogleGenAI } from "@google/genai";
 
 import { Toaster, toast } from 'sonner';
 
@@ -52,6 +53,37 @@ export default function App() {
   const [showLanding, setShowLanding] = useState(true);
   const invoiceRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<HTMLDivElement>(null);
+
+  const [assets, setAssets] = useState<{ logoSvg?: string; faviconSvg?: string }>({});
+
+  // Fetch generated assets
+  useEffect(() => {
+    const fetchAssets = async () => {
+      try {
+        const response = await fetch('/api/assets');
+        if (response.ok) {
+          const data = await response.json();
+          setAssets(data);
+          
+          // Update favicon if available
+          if (data.faviconSvg) {
+            const blob = new Blob([data.faviconSvg], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(blob);
+            let link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
+            if (!link) {
+              link = document.createElement('link');
+              link.rel = 'icon';
+              document.getElementsByTagName('head')[0].appendChild(link);
+            }
+            link.href = url;
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching assets:", error);
+      }
+    };
+    fetchAssets();
+  }, []);
 
   // Auto-save to localStorage
   useEffect(() => {
@@ -176,7 +208,7 @@ export default function App() {
     return (
       <>
         <Toaster position="top-center" richColors />
-        <LandingPage onStart={handleStart} />
+        <LandingPage onStart={handleStart} logoSvg={assets.logoSvg} />
       </>
     );
   }
@@ -195,8 +227,17 @@ export default function App() {
               <ArrowLeft className="w-5 h-5" />
             </button>
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold">S</div>
-              <h1 className="text-xl font-bold tracking-tight hidden sm:block">Simple Receipt Generator</h1>
+              {assets.logoSvg ? (
+                <div 
+                  className="h-8 w-auto flex items-center"
+                  dangerouslySetInnerHTML={{ __html: assets.logoSvg }} 
+                />
+              ) : (
+                <>
+                  <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold">S</div>
+                  <h1 className="text-xl font-bold tracking-tight hidden sm:block">Simple Receipt Generator</h1>
+                </>
+              )}
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -575,6 +616,11 @@ export default function App() {
                 <div>
                   {data.businessLogo ? (
                     <img src={data.businessLogo} alt="Logo" className="h-20 w-auto mb-6 object-contain" />
+                  ) : assets.logoSvg ? (
+                    <div 
+                      className="h-20 w-auto mb-6 flex items-center"
+                      dangerouslySetInnerHTML={{ __html: assets.logoSvg }} 
+                    />
                   ) : (
                     <div className="w-14 h-14 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-2xl mb-6 shadow-lg shadow-indigo-200">S</div>
                   )}
@@ -690,8 +736,17 @@ export default function App() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
             <div className="col-span-1 md:col-span-2">
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold">S</div>
-                <span className="text-xl font-bold">Simple Receipt Generator</span>
+                {assets.logoSvg ? (
+                  <div 
+                    className="h-8 w-auto flex items-center"
+                    dangerouslySetInnerHTML={{ __html: assets.logoSvg }} 
+                  />
+                ) : (
+                  <>
+                    <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold">S</div>
+                    <span className="text-xl font-bold">Simple Receipt Generator</span>
+                  </>
+                )}
               </div>
               <p className="text-slate-500 text-sm max-w-xs">
                 The world's simplest free online invoice generator. Helping small businesses and freelancers get paid faster since 2026.

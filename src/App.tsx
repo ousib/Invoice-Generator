@@ -223,9 +223,9 @@ export default function App() {
         {/* Editor Side */}
         <section className="space-y-8 no-print">
           {/* Document Type & Basic Info */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+          <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-8">
             <div className="flex items-center justify-between">
-              <div className="flex p-1 bg-slate-100 rounded-xl">
+              <div className="flex p-1.5 bg-slate-100 rounded-2xl">
                 <button 
                   onClick={() => setData(prev => ({ ...prev, type: 'invoice' }))}
                   className={cn(
@@ -259,18 +259,19 @@ export default function App() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Number</label>
+            <div className="grid grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Number</label>
                 <input 
                   type="text"
                   value={data.invoiceNumber}
                   onChange={(e) => setData(prev => ({ ...prev, invoiceNumber: e.target.value }))}
                   className="input-field"
+                  placeholder="INV-001"
                 />
               </div>
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Date</label>
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Date</label>
                 <input 
                   type="date"
                   value={data.date}
@@ -282,18 +283,19 @@ export default function App() {
           </div>
 
           {/* Business Details */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
-            <div className="flex items-center gap-2 text-slate-900 font-semibold">
+          <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-8">
+            <div className="flex items-center gap-2 text-slate-900 font-bold text-lg">
               <Settings2 className="w-5 h-5 text-indigo-600" />
               <h2>Business Details</h2>
             </div>
             
-            <div className="flex flex-col sm:flex-row gap-6">
+            <div className="flex flex-col sm:flex-row gap-8">
               <div className="flex-shrink-0">
-                <label className="block w-24 h-24 border-2 border-dashed border-slate-200 rounded-2xl hover:border-indigo-400 hover:bg-indigo-50 transition-all cursor-pointer relative overflow-hidden group">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 block">Logo</label>
+                <label className="block w-28 h-28 border-2 border-dashed border-slate-200 rounded-2xl hover:border-indigo-400 hover:bg-indigo-50 transition-all cursor-pointer relative overflow-hidden group">
                   {data.businessLogo ? (
                     <>
-                      <img src={data.businessLogo} alt="Logo" className="w-full h-full object-contain p-2" />
+                      <img src={data.businessLogo} alt="Logo" className="w-full h-full object-contain p-3" />
                       <button 
                         onClick={(e) => { e.preventDefault(); setData(prev => ({ ...prev, businessLogo: null })); }}
                         className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
@@ -304,74 +306,97 @@ export default function App() {
                   ) : (
                     <div className="flex flex-col items-center justify-center h-full text-slate-400">
                       <ImageIcon className="w-6 h-6 mb-1" />
-                      <span className="text-[10px] font-medium">LOGO</span>
+                      <span className="text-[10px] font-bold">UPLOAD</span>
                     </div>
                   )}
                   <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
                 </label>
               </div>
               
-              <div className="flex-1 space-y-4">
-                <input 
-                  placeholder="Business Name"
-                  value={data.businessName}
-                  onChange={(e) => setData(prev => ({ ...prev, businessName: e.target.value }))}
-                  className="w-full text-lg font-bold placeholder:text-slate-300 focus:outline-none"
-                />
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="flex-1 space-y-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Business Name</label>
                   <input 
-                    placeholder="Email Address"
-                    type="email"
-                    value={data.businessEmail}
-                    onChange={(e) => setData(prev => ({ ...prev, businessEmail: e.target.value }))}
-                    className="input-field"
-                  />
-                  <input 
-                    placeholder="Phone Number"
-                    type="tel"
-                    value={data.businessPhone}
-                    onChange={(e) => setData(prev => ({ ...prev, businessPhone: e.target.value }))}
-                    className="input-field"
+                    placeholder="Your Company Name"
+                    value={data.businessName}
+                    onChange={(e) => setData(prev => ({ ...prev, businessName: e.target.value }))}
+                    className="w-full text-xl font-black text-slate-900 placeholder:text-slate-200 focus:outline-none border-b-2 border-transparent focus:border-indigo-100 transition-colors pb-1"
                   />
                 </div>
-                <textarea 
-                  placeholder="Business Address"
-                  rows={2}
-                  value={data.businessAddress}
-                  onChange={(e) => setData(prev => ({ ...prev, businessAddress: e.target.value }))}
-                  className="input-field resize-none"
-                />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Email</label>
+                    <input 
+                      placeholder="hello@company.com"
+                      type="email"
+                      value={data.businessEmail}
+                      onChange={(e) => setData(prev => ({ ...prev, businessEmail: e.target.value }))}
+                      className="input-field"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Phone</label>
+                    <input 
+                      placeholder="+1 (555) 000-0000"
+                      type="tel"
+                      value={data.businessPhone}
+                      onChange={(e) => setData(prev => ({ ...prev, businessPhone: e.target.value }))}
+                      className="input-field"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Address</label>
+                  <textarea 
+                    placeholder="Street, City, Country"
+                    rows={2}
+                    value={data.businessAddress}
+                    onChange={(e) => setData(prev => ({ ...prev, businessAddress: e.target.value }))}
+                    className="input-field resize-none"
+                  />
+                </div>
               </div>
             </div>
           </div>
 
           {/* Client Details */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
-            <div className="flex items-center gap-2 text-slate-900 font-semibold">
+          <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-8">
+            <div className="flex items-center gap-2 text-slate-900 font-bold text-lg">
               <FileText className="w-5 h-5 text-indigo-600" />
               <h2>Bill To</h2>
             </div>
-            <div className="space-y-4">
-              <input 
-                placeholder="Client Name"
-                value={data.clientName}
-                onChange={(e) => setData(prev => ({ ...prev, clientName: e.target.value }))}
-                className="w-full text-base font-semibold placeholder:text-slate-300 focus:outline-none"
-              />
-              <input 
-                placeholder="Client Email"
-                type="email"
-                value={data.clientEmail}
-                onChange={(e) => setData(prev => ({ ...prev, clientEmail: e.target.value }))}
-                className="input-field"
-              />
-              <textarea 
-                placeholder="Client Address"
-                rows={2}
-                value={data.clientAddress}
-                onChange={(e) => setData(prev => ({ ...prev, clientAddress: e.target.value }))}
-                className="input-field resize-none"
-              />
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Client Name</label>
+                <input 
+                  placeholder="Client or Company Name"
+                  value={data.clientName}
+                  onChange={(e) => setData(prev => ({ ...prev, clientName: e.target.value }))}
+                  className="w-full text-lg font-bold text-slate-900 placeholder:text-slate-200 focus:outline-none border-b-2 border-transparent focus:border-indigo-100 transition-colors pb-1"
+                />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Client Email</label>
+                  <input 
+                    placeholder="client@example.com"
+                    type="email"
+                    value={data.clientEmail}
+                    onChange={(e) => setData(prev => ({ ...prev, clientEmail: e.target.value }))}
+                    className="input-field"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Client Address</label>
+                  <textarea 
+                    placeholder="Client's Street, City, Country"
+                    rows={1}
+                    value={data.clientAddress}
+                    onChange={(e) => setData(prev => ({ ...prev, clientAddress: e.target.value }))}
+                    className="input-field resize-none min-h-[46px]"
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
@@ -382,63 +407,69 @@ export default function App() {
             <span className="text-center px-4">Responsive Rectangle Ad Space</span>
           </div>
 
-          {/* Items Table */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+          {/* Line Items */}
+          <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-8">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-slate-900 font-semibold">
+              <div className="flex items-center gap-2 text-slate-900 font-bold text-lg">
                 <LayoutTemplate className="w-5 h-5 text-indigo-600" />
                 <h2>Line Items</h2>
               </div>
               <button 
                 onClick={handleAddItem}
-                className="flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:text-indigo-700"
+                className="flex items-center gap-1.5 text-sm font-bold text-indigo-600 hover:text-indigo-700 px-4 py-2 bg-indigo-50 rounded-2xl transition-all"
               >
                 <Plus className="w-4 h-4" />
                 Add Item
               </button>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-6">
               <AnimatePresence initial={false}>
                 {data.items.map((item, index) => (
                   <motion.div 
                     key={item.id}
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="flex gap-3 items-start group"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className="flex gap-4 items-start group p-6 bg-slate-50/50 rounded-2xl border border-slate-100"
                   >
-                    <div className="flex-1 space-y-2">
-                      <input 
-                        placeholder="Item description"
-                        value={item.description}
-                        onChange={(e) => handleItemChange(item.id, 'description', e.target.value)}
-                        className="input-field"
-                      />
-                      <div className="grid grid-cols-3 gap-3">
-                        <div className="space-y-1">
-                          <label className="text-[10px] font-bold text-slate-400 uppercase">Qty</label>
+                    <div className="flex-1 space-y-4">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Description</label>
+                        <input 
+                          placeholder="Item description"
+                          value={item.description}
+                          onChange={(e) => handleItemChange(item.id, 'description', e.target.value)}
+                          className="input-field !bg-white"
+                        />
+                      </div>
+                      <div className="grid grid-cols-3 gap-6">
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Qty</label>
                           <input 
                             type="number"
                             inputMode="decimal"
                             value={item.quantity}
                             onChange={(e) => handleItemChange(item.id, 'quantity', parseFloat(e.target.value) || 0)}
-                            className="input-field"
+                            className="input-field !bg-white text-center"
                           />
                         </div>
-                        <div className="space-y-1">
-                          <label className="text-[10px] font-bold text-slate-400 uppercase">Price</label>
-                          <input 
-                            type="number"
-                            inputMode="decimal"
-                            value={item.price}
-                            onChange={(e) => handleItemChange(item.id, 'price', parseFloat(e.target.value) || 0)}
-                            className="input-field"
-                          />
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Price</label>
+                          <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">{currencySymbol}</span>
+                            <input 
+                              type="number"
+                              inputMode="decimal"
+                              value={item.price}
+                              onChange={(e) => handleItemChange(item.id, 'price', parseFloat(e.target.value) || 0)}
+                              className="input-field !bg-white pl-7"
+                            />
+                          </div>
                         </div>
-                        <div className="space-y-1">
-                          <label className="text-[10px] font-bold text-slate-400 uppercase">Total</label>
-                          <div className="w-full text-sm font-semibold py-2 px-1">
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total</label>
+                          <div className="w-full text-sm font-bold text-slate-900 py-2.5 px-1">
                             {currencySymbol}{(item.quantity * item.price).toLocaleString()}
                           </div>
                         </div>
@@ -446,7 +477,8 @@ export default function App() {
                     </div>
                     <button 
                       onClick={() => handleRemoveItem(item.id)}
-                      className="mt-8 p-2 text-slate-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                      className="mt-8 p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all opacity-0 group-hover:opacity-100"
+                      disabled={data.items.length === 1}
                     >
                       <Trash2 className="w-5 h-5" />
                     </button>
@@ -457,11 +489,11 @@ export default function App() {
           </div>
 
           {/* Totals & Notes */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-              <div className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Notes / Terms</label>
+          <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-12">
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Notes / Terms</label>
                   <textarea 
                     placeholder="Payment terms, bank details, etc."
                     rows={4}
@@ -471,10 +503,10 @@ export default function App() {
                   />
                 </div>
               </div>
-              <div className="space-y-3">
-                <div className="flex justify-between text-sm text-slate-600">
+              <div className="space-y-4">
+                <div className="flex justify-between text-sm text-slate-500 font-medium">
                   <span>Subtotal</span>
-                  <span>{currencySymbol}{subtotal.toLocaleString()}</span>
+                  <span className="text-slate-900">{currencySymbol}{subtotal.toLocaleString()}</span>
                 </div>
                 <div className="flex items-center justify-between gap-4">
                   <span className="text-sm text-slate-600">Tax (%)</span>
@@ -515,43 +547,59 @@ export default function App() {
           <div className="bg-slate-200 p-4 sm:p-8 rounded-3xl shadow-inner overflow-hidden print:bg-white print:p-0 print:shadow-none">
             <div 
               ref={invoiceRef}
-              className="bg-white w-full aspect-[1/1.414] shadow-2xl p-8 sm:p-12 flex flex-col print:shadow-none print:p-0 print:w-[210mm] print:h-[297mm] mx-auto"
-              style={{ fontSize: '12px' }}
+              className="bg-white w-full aspect-[1/1.414] shadow-2xl p-8 sm:p-16 flex flex-col print:shadow-none print:p-0 print:w-[210mm] print:h-[297mm] mx-auto"
+              style={{ fontSize: '13px' }}
             >
               {/* Invoice Header */}
-              <div className="flex justify-between items-start mb-12">
+              <div className="flex justify-between items-start mb-16">
                 <div>
                   {data.businessLogo ? (
-                    <img src={data.businessLogo} alt="Logo" className="h-16 w-auto mb-4 object-contain" />
+                    <img src={data.businessLogo} alt="Logo" className="h-20 w-auto mb-6 object-contain" />
                   ) : (
-                    <div className="w-12 h-12 bg-indigo-600 rounded flex items-center justify-center text-white font-bold text-xl mb-4">S</div>
+                    <div className="w-14 h-14 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-2xl mb-6 shadow-lg shadow-indigo-200">S</div>
                   )}
-                  <h2 className="text-2xl font-bold text-slate-900 uppercase tracking-tight">{data.type}</h2>
+                  <h2 className="text-4xl font-black text-slate-900 uppercase tracking-tighter">{data.type}</h2>
                 </div>
-                <div className="text-right space-y-1">
-                  <p className="font-bold text-slate-900">#{data.invoiceNumber}</p>
-                  <p className="text-slate-500">Date: {data.date}</p>
-                  {data.type === 'invoice' && <p className="text-slate-500">Due: {data.dueDate}</p>}
+                <div className="text-right space-y-2">
+                  <div className="inline-block px-3 py-1 bg-slate-100 rounded-md mb-2">
+                    <p className="font-bold text-slate-900 text-sm">#{data.invoiceNumber}</p>
+                  </div>
+                  <div className="space-y-1 text-sm">
+                    <p className="text-slate-500 flex justify-end gap-2">
+                      <span className="font-medium text-slate-400 uppercase text-[10px] tracking-wider">Date:</span>
+                      {data.date}
+                    </p>
+                    {data.type === 'invoice' && (
+                      <p className="text-slate-500 flex justify-end gap-2">
+                        <span className="font-medium text-slate-400 uppercase text-[10px] tracking-wider">Due:</span>
+                        {data.dueDate}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
 
               {/* Addresses */}
-              <div className="grid grid-cols-2 gap-12 mb-12">
-                <div className="space-y-2">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">From</p>
-                  <p className="font-bold text-slate-900 text-sm">{data.businessName || 'Your Business Name'}</p>
-                  <div className="text-slate-500 leading-relaxed whitespace-pre-line">
-                    {data.businessAddress}
-                    {data.businessEmail && `\n${data.businessEmail}`}
-                    {data.businessPhone && `\n${data.businessPhone}`}
+              <div className="grid grid-cols-2 gap-16 mb-16">
+                <div className="space-y-3">
+                  <p className="text-[11px] font-bold text-indigo-600 uppercase tracking-[0.2em] border-b border-indigo-100 pb-1 inline-block">From</p>
+                  <div className="pl-4">
+                    <p className="font-bold text-slate-900 text-base mb-1">{data.businessName || 'Your Business Name'}</p>
+                    <div className="text-slate-500 leading-relaxed whitespace-pre-line text-sm">
+                      {data.businessAddress}
+                      {data.businessEmail && `\n${data.businessEmail}`}
+                      {data.businessPhone && `\n${data.businessPhone}`}
+                    </div>
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Bill To</p>
-                  <p className="font-bold text-slate-900 text-sm">{data.clientName || 'Client Name'}</p>
-                  <div className="text-slate-500 leading-relaxed whitespace-pre-line">
-                    {data.clientAddress}
-                    {data.clientEmail && `\n${data.clientEmail}`}
+                <div className="space-y-3">
+                  <p className="text-[11px] font-bold text-indigo-600 uppercase tracking-[0.2em] border-b border-indigo-100 pb-1 inline-block">Bill To</p>
+                  <div className="pl-4">
+                    <p className="font-bold text-slate-900 text-base mb-1">{data.clientName || 'Client Name'}</p>
+                    <div className="text-slate-500 leading-relaxed whitespace-pre-line text-sm">
+                      {data.clientAddress}
+                      {data.clientEmail && `\n${data.clientEmail}`}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -561,19 +609,19 @@ export default function App() {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b-2 border-slate-900">
-                      <th className="text-left py-3 font-bold text-slate-900 uppercase tracking-wider">Description</th>
-                      <th className="text-right py-3 font-bold text-slate-900 uppercase tracking-wider w-20">Qty</th>
-                      <th className="text-right py-3 font-bold text-slate-900 uppercase tracking-wider w-28">Price</th>
-                      <th className="text-right py-3 font-bold text-slate-900 uppercase tracking-wider w-28">Total</th>
+                      <th className="text-left pb-4 font-bold text-slate-900 uppercase tracking-widest text-[11px]">Description</th>
+                      <th className="text-right pb-4 font-bold text-slate-900 uppercase tracking-widest text-[11px] w-20">Qty</th>
+                      <th className="text-right pb-4 font-bold text-slate-900 uppercase tracking-widest text-[11px] w-28">Price</th>
+                      <th className="text-right pb-4 font-bold text-slate-900 uppercase tracking-widest text-[11px] w-28">Total</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {data.items.map((item) => (
-                      <tr key={item.id}>
-                        <td className="py-4 text-slate-700">{item.description || 'Item Description'}</td>
-                        <td className="py-4 text-right text-slate-700">{item.quantity}</td>
-                        <td className="py-4 text-right text-slate-700">{currencySymbol}{item.price.toLocaleString()}</td>
-                        <td className="py-4 text-right font-bold text-slate-900">{currencySymbol}{(item.quantity * item.price).toLocaleString()}</td>
+                      <tr key={item.id} className="group">
+                        <td className="py-5 text-slate-700 font-medium">{item.description || 'Item Description'}</td>
+                        <td className="py-5 text-right text-slate-600">{item.quantity}</td>
+                        <td className="py-5 text-right text-slate-600">{currencySymbol}{item.price.toLocaleString()}</td>
+                        <td className="py-5 text-right font-bold text-slate-900">{currencySymbol}{(item.quantity * item.price).toLocaleString()}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -581,31 +629,33 @@ export default function App() {
               </div>
 
               {/* Footer Totals */}
-              <div className="mt-12 pt-6 border-t-2 border-slate-900 flex justify-between items-start">
-                <div className="max-w-[50%]">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Notes</p>
-                  <p className="text-slate-500 leading-relaxed whitespace-pre-line">{data.notes || 'Thank you for your business!'}</p>
+              <div className="mt-16 pt-8 border-t-2 border-slate-900 flex justify-between items-start">
+                <div className="max-w-[45%]">
+                  <p className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-3">Notes & Terms</p>
+                  <p className="text-slate-500 leading-relaxed whitespace-pre-line text-sm italic">
+                    {data.notes || 'Thank you for your business! Please make payment within the due date.'}
+                  </p>
                 </div>
-                <div className="w-48 space-y-2">
-                  <div className="flex justify-between text-slate-500">
-                    <span>Subtotal</span>
-                    <span>{currencySymbol}{subtotal.toLocaleString()}</span>
+                <div className="w-64 space-y-3">
+                  <div className="flex justify-between text-slate-500 text-sm">
+                    <span className="font-medium">Subtotal</span>
+                    <span className="font-semibold">{currencySymbol}{subtotal.toLocaleString()}</span>
                   </div>
                   {data.taxRate > 0 && (
-                    <div className="flex justify-between text-slate-500">
-                      <span>Tax ({data.taxRate}%)</span>
-                      <span>{currencySymbol}{taxAmount.toLocaleString()}</span>
+                    <div className="flex justify-between text-slate-500 text-sm">
+                      <span className="font-medium">Tax ({data.taxRate}%)</span>
+                      <span className="font-semibold">{currencySymbol}{taxAmount.toLocaleString()}</span>
                     </div>
                   )}
                   {data.discount > 0 && (
-                    <div className="flex justify-between text-slate-500">
-                      <span>Discount</span>
-                      <span>-{currencySymbol}{data.discount.toLocaleString()}</span>
+                    <div className="flex justify-between text-slate-500 text-sm">
+                      <span className="font-medium">Discount</span>
+                      <span className="font-semibold text-red-500">-{currencySymbol}{data.discount.toLocaleString()}</span>
                     </div>
                   )}
-                  <div className="flex justify-between text-lg font-bold text-slate-900 pt-2 border-t border-slate-100">
-                    <span>Total</span>
-                    <span>{currencySymbol}{total.toLocaleString()}</span>
+                  <div className="flex justify-between text-xl font-black text-slate-900 pt-4 border-t border-slate-200">
+                    <span className="uppercase tracking-tighter">Total</span>
+                    <span className="text-indigo-600">{currencySymbol}{total.toLocaleString()}</span>
                   </div>
                 </div>
               </div>

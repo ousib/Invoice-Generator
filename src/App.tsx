@@ -19,6 +19,8 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import LandingPage from './components/LandingPage';
 
+import { Toaster, toast } from 'sonner';
+
 const INITIAL_DATA: InvoiceData = {
   type: 'invoice',
   invoiceNumber: `INV-${Math.floor(1000 + Math.random() * 9000)}`,
@@ -114,33 +116,54 @@ export default function App() {
   };
 
   const handleDownloadPDF = async () => {
-    if (!invoiceRef.current) return;
+    if (!invoiceRef.current) {
+      toast.error('Invoice preview not found');
+      return;
+    }
+    
     setIsGenerating(true);
+    const toastId = toast.loading('Generating PDF...');
+    
     try {
-      const canvas = await html2canvas(invoiceRef.current, {
+      // Ensure the element is visible for capture
+      const element = invoiceRef.current;
+      
+      const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,
         logging: false,
+        backgroundColor: '#ffffff',
       });
+      
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      
       pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
       pdf.save(`${data.type}-${data.invoiceNumber}.pdf`);
+      
+      toast.success('PDF downloaded successfully!', { id: toastId });
     } catch (error) {
       console.error('PDF Generation failed:', error);
+      toast.error('Failed to generate PDF. Please try again.', { id: toastId });
     } finally {
       setIsGenerating(false);
     }
   };
 
   if (showLanding) {
-    return <LandingPage onStart={handleStart} />;
+    return (
+      <>
+        <Toaster position="top-center" richColors />
+        <LandingPage onStart={handleStart} />
+      </>
+    );
   }
 
   return (
     <div className="min-h-screen flex flex-col" ref={editorRef}>
+      <Toaster position="top-center" richColors />
       {/* Header */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-50 no-print">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
@@ -483,16 +506,16 @@ export default function App() {
         </section>
 
         {/* Preview Side */}
-        <section className="hidden lg:block sticky top-24 h-fit">
-          <div className="flex items-center gap-2 mb-4 text-slate-500 font-medium text-sm">
+        <section className="block lg:sticky lg:top-24 h-fit print:block print:static">
+          <div className="flex items-center gap-2 mb-4 text-slate-500 font-medium text-sm no-print">
             <Info className="w-4 h-4" />
             Live Preview
           </div>
           
-          <div className="bg-slate-200 p-8 rounded-3xl shadow-inner overflow-hidden">
+          <div className="bg-slate-200 p-4 sm:p-8 rounded-3xl shadow-inner overflow-hidden print:bg-white print:p-0 print:shadow-none">
             <div 
               ref={invoiceRef}
-              className="bg-white w-full aspect-[1/1.414] shadow-2xl p-12 flex flex-col"
+              className="bg-white w-full aspect-[1/1.414] shadow-2xl p-8 sm:p-12 flex flex-col print:shadow-none print:p-0 print:w-[210mm] print:h-[297mm] mx-auto"
               style={{ fontSize: '12px' }}
             >
               {/* Invoice Header */}

@@ -547,7 +547,7 @@ export default function App() {
           <div className="bg-slate-200 p-4 sm:p-8 rounded-3xl shadow-inner overflow-hidden print:bg-white print:p-0 print:shadow-none">
             <div 
               ref={invoiceRef}
-              className="bg-white w-full aspect-[1/1.414] shadow-2xl p-8 sm:p-16 flex flex-col print:shadow-none print:p-0 print:w-[210mm] print:h-[297mm] mx-auto"
+              className="bg-white w-full aspect-[1/1.414] shadow-2xl p-8 sm:p-16 flex flex-col print:shadow-none print:p-16 print:w-[210mm] print:h-[297mm] mx-auto"
               style={{ fontSize: '13px' }}
             >
               {/* Invoice Header */}

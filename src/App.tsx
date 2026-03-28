@@ -41,7 +41,7 @@ const INITIAL_DATA: InvoiceData = {
   notes: '',
 };
 
-const STORAGE_KEY = 'swift_invoice_draft';
+const STORAGE_KEY = 'simple_receipt_generator_draft';
 
 export default function App() {
   const [data, setData] = useState<InvoiceData>(() => {

@@ -3,12 +3,36 @@ import { CheckCircle2, Zap, ShieldCheck, Globe, ArrowRight } from 'lucide-react'
 
 interface LandingPageProps {
   onStart: () => void;
+  onAbout: () => void;
   logoSvg?: string;
 }
 
-export default function LandingPage({ onStart, logoSvg }: LandingPageProps) {
+export default function LandingPage({ onStart, onAbout, logoSvg }: LandingPageProps) {
   return (
     <div className="bg-white no-print">
+      {/* Navigation */}
+      <nav className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          {logoSvg ? (
+            <div 
+              className="h-8 w-auto flex items-center"
+              dangerouslySetInnerHTML={{ __html: logoSvg }} 
+            />
+          ) : (
+            <>
+              <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold">S</div>
+              <span className="text-xl font-bold tracking-tight">Simple Receipt Generator</span>
+            </>
+          )}
+        </div>
+        <button 
+          onClick={onAbout}
+          className="text-sm font-medium text-slate-500 hover:text-indigo-600 transition-colors"
+        >
+          About Us
+        </button>
+      </nav>
+
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-16 pb-24 lg:pt-32 lg:pb-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">

@@ -18,6 +18,7 @@ import { cn, CURRENCIES, type InvoiceData, type InvoiceItem } from './lib/utils'
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import LandingPage from './components/LandingPage';
+import AboutPage from './components/AboutPage';
 import { GoogleGenAI } from "@google/genai";
 
 import { Toaster, toast } from 'sonner';
@@ -51,6 +52,7 @@ export default function App() {
   });
   const [isGenerating, setIsGenerating] = useState(false);
   const [showLanding, setShowLanding] = useState(true);
+  const [showAbout, setShowAbout] = useState(false);
   const invoiceRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<HTMLDivElement>(null);
 
@@ -208,11 +210,20 @@ export default function App() {
     }
   };
 
+  if (showAbout) {
+    return (
+      <>
+        <Toaster position="top-center" richColors />
+        <AboutPage onBack={() => setShowAbout(false)} logoSvg={assets.logoSvg} />
+      </>
+    );
+  }
+
   if (showLanding) {
     return (
       <>
         <Toaster position="top-center" richColors />
-        <LandingPage onStart={handleStart} logoSvg={assets.logoSvg} />
+        <LandingPage onStart={handleStart} onAbout={() => setShowAbout(true)} logoSvg={assets.logoSvg} />
       </>
     );
   }
@@ -794,6 +805,7 @@ export default function App() {
             <div>
               <h4 className="font-bold text-slate-900 mb-4">Support</h4>
               <ul className="space-y-2 text-sm text-slate-500">
+                <li><button onClick={() => setShowAbout(true)} className="hover:text-indigo-600">About Us</button></li>
                 <li><a href="#" className="hover:text-indigo-600">Help Center</a></li>
                 <li><a href="#" className="hover:text-indigo-600">Privacy Policy</a></li>
                 <li><a href="#" className="hover:text-indigo-600">Terms of Service</a></li>

@@ -4,10 +4,11 @@ import { CheckCircle2, Zap, ShieldCheck, Globe, ArrowRight } from 'lucide-react'
 interface LandingPageProps {
   onStart: () => void;
   onAbout: () => void;
+  onPrivacy: () => void;
   logoSvg?: string;
 }
 
-export default function LandingPage({ onStart, onAbout, logoSvg }: LandingPageProps) {
+export default function LandingPage({ onStart, onAbout, onPrivacy, logoSvg }: LandingPageProps) {
   return (
     <div className="bg-white no-print">
       {/* Navigation */}
@@ -164,6 +165,144 @@ export default function LandingPage({ onStart, onAbout, logoSvg }: LandingPagePr
         </div>
       </section>
 
+      {/* SEO Content Section: How to Guide */}
+      <section className="py-24 bg-slate-50">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div>
+              <h2 className="text-3xl font-bold text-slate-900 mb-6">
+                How to Create a Professional Invoice in 4 Simple Steps
+              </h2>
+              <p className="text-lg text-slate-600 mb-8">
+                Using our <span className="font-semibold text-indigo-600">free online invoice generator</span> is the fastest way to bill your clients. Follow these simple steps to create your first document:
+              </p>
+              <div className="space-y-6">
+                <div className="flex gap-4">
+                  <div className="flex-shrink-0 w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold">1</div>
+                  <div>
+                    <h4 className="font-bold text-slate-900">Enter Your Business Details</h4>
+                    <p className="text-slate-500">Add your business name, address, and contact info. You can even upload your logo for a professional look.</p>
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <div className="flex-shrink-0 w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold">2</div>
+                  <div>
+                    <h4 className="font-bold text-slate-900">Add Client Information</h4>
+                    <p className="text-slate-500">Input your client's name and contact details so they know exactly who the invoice is for.</p>
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <div className="flex-shrink-0 w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold">3</div>
+                  <div>
+                    <h4 className="font-bold text-slate-900">List Items and Services</h4>
+                    <p className="text-slate-500">Add line items for your products or services, including quantities and prices. Our tool calculates the totals automatically.</p>
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <div className="flex-shrink-0 w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold">4</div>
+                  <div>
+                    <h4 className="font-bold text-slate-900">Download and Send</h4>
+                    <p className="text-slate-500">Click the download button to save your <span className="font-semibold text-indigo-600">PDF invoice</span>. It's ready to be emailed to your client instantly.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white p-8 rounded-3xl shadow-xl border border-slate-200 rotate-2">
+              <div className="space-y-4 opacity-50">
+                <div className="h-4 bg-slate-100 rounded w-3/4"></div>
+                <div className="h-4 bg-slate-100 rounded w-1/2"></div>
+                <div className="border-t border-slate-100 pt-4 space-y-2">
+                  <div className="h-3 bg-slate-50 rounded w-full"></div>
+                  <div className="h-3 bg-slate-50 rounded w-full"></div>
+                  <div className="h-3 bg-slate-50 rounded w-2/3"></div>
+                </div>
+                <div className="pt-8 flex justify-end">
+                  <div className="h-10 w-32 bg-indigo-600 rounded-lg"></div>
+                </div>
+              </div>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="bg-white px-6 py-3 rounded-2xl shadow-2xl border border-indigo-100 text-indigo-600 font-bold flex items-center gap-2">
+                  <Zap className="w-5 h-5" />
+                  Live Preview
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SEO Content Section: Best Practices */}
+      <section className="py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-slate-900 sm:text-4xl">
+              Invoicing Best Practices for Getting Paid Faster
+            </h2>
+            <p className="mt-4 text-lg text-slate-600 max-w-2xl mx-auto">
+              A professional <span className="font-semibold text-indigo-600">online receipt generator</span> is just the start. Follow these tips to optimize your billing process.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="p-8 rounded-3xl bg-white border border-slate-100 hover:border-indigo-100 transition-colors">
+              <h3 className="text-xl font-bold text-slate-900 mb-4">1. Be Clear and Concise</h3>
+              <p className="text-slate-500 leading-relaxed">
+                Ensure your line items are easy to understand. Instead of "Consulting," use "SEO Strategy Consultation - 5 Hours." Clarity reduces questions and speeds up the payment process.
+              </p>
+            </div>
+            <div className="p-8 rounded-3xl bg-white border border-slate-100 hover:border-indigo-100 transition-colors">
+              <h3 className="text-xl font-bold text-slate-900 mb-4">2. Include Payment Terms</h3>
+              <p className="text-slate-500 leading-relaxed">
+                Specify your payment terms clearly. Whether it's "Due on Receipt" or "Net 30," setting expectations upfront prevents confusion and late payments.
+              </p>
+            </div>
+            <div className="p-8 rounded-3xl bg-white border border-slate-100 hover:border-indigo-100 transition-colors">
+              <h3 className="text-xl font-bold text-slate-900 mb-4">3. Send Invoices Promptly</h3>
+              <p className="text-slate-500 leading-relaxed">
+                The best time to send an invoice is immediately after the work is completed. Using a <span className="font-semibold text-indigo-600">simple invoice maker</span> allows you to do this in seconds while the value is fresh in the client's mind.
+              </p>
+            </div>
+            <div className="p-8 rounded-3xl bg-white border border-slate-100 hover:border-indigo-100 transition-colors">
+              <h3 className="text-xl font-bold text-slate-900 mb-4">4. Follow Up on Overdue Payments</h3>
+              <p className="text-slate-500 leading-relaxed">
+                Don't be afraid to send a polite reminder if a payment is late. Most clients simply forget, and a quick follow-up can resolve the issue quickly.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SEO Content Section: Benefits */}
+      <section className="py-24 bg-indigo-900 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold sm:text-4xl">
+              Why Your Small Business Needs a Professional Receipt Maker
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <div className="space-y-4">
+              <h4 className="text-xl font-bold text-indigo-300">Builds Trust</h4>
+              <p className="text-indigo-100/70 leading-relaxed">
+                A professional, well-formatted invoice signals to your clients that you are a serious business. It builds credibility and trust, making them more likely to work with you again.
+              </p>
+            </div>
+            <div className="space-y-4">
+              <h4 className="text-xl font-bold text-indigo-300">Improves Organization</h4>
+              <p className="text-indigo-100/70 leading-relaxed">
+                Keeping track of your billing is essential for tax purposes and financial health. Our <span className="font-semibold text-white">receipt maker online</span> helps you maintain a consistent record of all transactions.
+              </p>
+            </div>
+            <div className="space-y-4">
+              <h4 className="text-xl font-bold text-indigo-300">Legal Compliance</h4>
+              <p className="text-indigo-100/70 leading-relaxed">
+                Many regions require businesses to provide formal receipts for tax and accounting. Using a standardized template ensures you meet these requirements without the hassle.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Final CTA */}
       <section className="py-24 bg-indigo-600">
         <div className="max-w-7xl mx-auto px-4 text-center">
@@ -178,6 +317,29 @@ export default function LandingPage({ onStart, onAbout, logoSvg }: LandingPagePr
           </button>
         </div>
       </section>
+
+      {/* Footer */}
+      <footer className="py-12 bg-white border-t border-slate-100">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-2 text-slate-400 text-sm">
+            © 2026 Simple Receipt Generator. All rights reserved.
+          </div>
+          <div className="flex items-center gap-8">
+            <button 
+              onClick={onAbout}
+              className="text-sm font-medium text-slate-500 hover:text-indigo-600 transition-colors"
+            >
+              About Us
+            </button>
+            <button 
+              onClick={onPrivacy}
+              className="text-sm font-medium text-slate-500 hover:text-indigo-600 transition-colors"
+            >
+              Privacy Policy
+            </button>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

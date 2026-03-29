@@ -11,7 +11,9 @@ import {
   FileText,
   Settings2,
   Info,
-  ArrowLeft
+  ArrowLeft,
+  History,
+  Share2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn, CURRENCIES, type InvoiceData, type InvoiceItem } from './lib/utils';
@@ -21,6 +23,7 @@ import { jsPDF } from 'jspdf';
 import html2pdf from 'html2pdf.js';
 import LandingPage from './components/LandingPage';
 import AboutPage from './components/AboutPage';
+import PrivacyPolicy from './components/PrivacyPolicy';
 import { GoogleGenAI } from "@google/genai";
 
 import { Toaster, toast } from 'sonner';
@@ -46,15 +49,31 @@ const INITIAL_DATA: InvoiceData = {
 };
 
 const STORAGE_KEY = 'simple_receipt_generator_draft';
+const RECENT_KEY = 'simple_receipt_generator_history';
+
+interface RecentReceipt {
+  id: string;
+  number: string;
+  client: string;
+  total: number;
+  currency: string;
+  date: string;
+  data: InvoiceData;
+}
 
 export default function App() {
   const [data, setData] = useState<InvoiceData>(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     return saved ? JSON.parse(saved) : INITIAL_DATA;
   });
+  const [recentReceipts, setRecentReceipts] = useState<RecentReceipt[]>(() => {
+    const saved = localStorage.getItem(RECENT_KEY);
+    return saved ? JSON.parse(saved) : [];
+  });
   const [isGenerating, setIsGenerating] = useState(false);
   const [showLanding, setShowLanding] = useState(true);
   const [showAbout, setShowAbout] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(false);
   const invoiceRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<HTMLDivElement>(null);
 
@@ -106,6 +125,11 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   }, [data]);
+
+  // Save recent receipts to localStorage
+  useEffect(() => {
+    localStorage.setItem(RECENT_KEY, JSON.stringify(recentReceipts));
+  }, [recentReceipts]);
 
   const handleReset = () => {
     if (window.confirm('Are you sure you want to clear all data?')) {
@@ -164,6 +188,23 @@ export default function App() {
     window.print();
   };
 
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Simple Receipt Generator',
+          text: 'Create professional invoices and receipts for free!',
+          url: window.location.origin,
+        });
+      } catch (error) {
+        console.error('Error sharing:', error);
+      }
+    } else {
+      navigator.clipboard.writeText(window.location.origin);
+      toast.success('Link copied to clipboard!');
+    }
+  };
+
   const handleDownloadPDF = async () => {
     if (!invoiceRef.current) {
       toast.error('Invoice preview not found');
@@ -200,6 +241,22 @@ export default function App() {
       // New Promise-based usage:
       await html2pdfFunc().set(opt).from(element).save();
       
+      // Add to recent receipts
+      const newRecent: RecentReceipt = {
+        id: Math.random().toString(36).substr(2, 9),
+        number: data.invoiceNumber,
+        client: data.clientName || 'Unnamed Client',
+        total: total,
+        currency: currencySymbol,
+        date: new Date().toLocaleDateString(),
+        data: { ...data }
+      };
+      
+      setRecentReceipts(prev => {
+        const filtered = prev.filter(r => r.number !== data.invoiceNumber);
+        return [newRecent, ...filtered].slice(0, 5);
+      });
+
       toast.success('PDF downloaded successfully!', { id: toastId });
     } catch (error) {
       console.error('PDF Generation failed with error:', error);
@@ -221,11 +278,25 @@ export default function App() {
     );
   }
 
+  if (showPrivacy) {
+    return (
+      <>
+        <Toaster position="top-center" richColors />
+        <PrivacyPolicy onBack={() => setShowPrivacy(false)} />
+      </>
+    );
+  }
+
   if (showLanding) {
     return (
       <>
         <Toaster position="top-center" richColors />
-        <LandingPage onStart={handleStart} onAbout={() => setShowAbout(true)} logoSvg={assets.logoSvg} />
+        <LandingPage 
+          onStart={handleStart} 
+          onAbout={() => setShowAbout(true)} 
+          onPrivacy={() => setShowPrivacy(true)}
+          logoSvg={assets.logoSvg} 
+        />
       </>
     );
   }
@@ -271,6 +342,13 @@ export default function App() {
               title="Print"
             >
               <Printer className="w-5 h-5" />
+            </button>
+            <button 
+              onClick={handleShare}
+              className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+              title="Share"
+            >
+              <Share2 className="w-5 h-5" />
             </button>
             <button 
               onClick={handleDownloadPDF}
@@ -640,6 +718,39 @@ export default function App() {
             {/* Ad Slot: Inline Ad */}
             <span className="text-center px-4">Responsive Rectangle Ad Space</span>
           </div>
+
+          {/* Recent Receipts Section */}
+          {recentReceipts.length > 0 && (
+            <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+              <div className="flex items-center gap-2 text-slate-900 font-bold text-lg">
+                <History className="w-5 h-5 text-indigo-600" />
+                <h2>Recent Receipts</h2>
+              </div>
+              <div className="space-y-3">
+                {recentReceipts.map((receipt) => (
+                  <button
+                    key={receipt.id}
+                    onClick={() => {
+                      if (window.confirm('Load this receipt? This will overwrite your current draft.')) {
+                        setData(receipt.data);
+                        toast.success(`Loaded ${receipt.number}`);
+                      }
+                    }}
+                    className="w-full flex items-center justify-between p-4 rounded-2xl border border-slate-100 hover:border-indigo-200 hover:bg-indigo-50/50 transition-all text-left group"
+                  >
+                    <div className="flex flex-col">
+                      <span className="text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">{receipt.number}</span>
+                      <span className="text-xs text-slate-400">{receipt.client}</span>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm font-bold text-slate-900">{receipt.currency}{receipt.total.toLocaleString()}</div>
+                      <div className="text-[10px] text-slate-400 uppercase tracking-wider">{receipt.date}</div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </section>
 
         {/* Preview Side */}

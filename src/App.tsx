@@ -56,7 +56,27 @@ export default function App() {
   const invoiceRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<HTMLDivElement>(null);
 
-  const [assets, setAssets] = useState<{ logoSvg?: string; faviconSvg?: string }>({});
+  const [assets, setAssets] = useState<{ logoSvg?: string; faviconSvg?: string }>({
+    logoSvg: `<svg width="200" height="50" viewBox="0 0 200 50" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" x="5" y="5" rx="8" fill="#4f46e5" /><path d="M15 15h20M15 20h20M15 25h10" stroke="white" stroke-width="2" stroke-linecap="round" /><path d="M30 30l3 3 7-7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" /><text x="55" y="32" font-family="Inter, sans-serif" font-weight="bold" font-size="18" fill="#1e293b">Simple Receipt</text><text x="55" y="45" font-family="Inter, sans-serif" font-size="10" fill="#64748b">Generator</text></svg>`,
+    faviconSvg: `<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><rect width="32" height="32" rx="6" fill="#4f46e5" /><path d="M8 10h16M8 14h16M8 18h8" stroke="white" stroke-width="2" stroke-linecap="round" /><path d="M20 22l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" /></svg>`
+  });
+
+  // Update favicon when assets change
+  useEffect(() => {
+    if (assets.faviconSvg) {
+      const blob = new Blob([assets.faviconSvg], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(blob);
+      let link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
+      if (!link) {
+        link = document.createElement('link');
+        link.rel = 'icon';
+        document.getElementsByTagName('head')[0].appendChild(link);
+      }
+      link.href = url;
+      
+      return () => URL.revokeObjectURL(url);
+    }
+  }, [assets.faviconSvg]);
 
   // Fetch generated assets
   useEffect(() => {
@@ -65,19 +85,8 @@ export default function App() {
         const response = await fetch('/api/assets');
         if (response.ok) {
           const data = await response.json();
-          setAssets(data);
-          
-          // Update favicon if available
-          if (data.faviconSvg) {
-            const blob = new Blob([data.faviconSvg], { type: 'image/svg+xml' });
-            const url = URL.createObjectURL(blob);
-            let link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
-            if (!link) {
-              link = document.createElement('link');
-              link.rel = 'icon';
-              document.getElementsByTagName('head')[0].appendChild(link);
-            }
-            link.href = url;
+          if (data.logoSvg || data.faviconSvg) {
+            setAssets(prev => ({ ...prev, ...data }));
           }
         }
       } catch (error) {

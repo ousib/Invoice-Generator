@@ -11,26 +11,28 @@ export default function LandingPage({ onStart, onAbout, logoSvg }: LandingPagePr
   return (
     <div className="bg-white no-print">
       {/* Navigation */}
-      <nav className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          {logoSvg ? (
-            <div 
-              className="h-8 w-auto flex items-center"
-              dangerouslySetInnerHTML={{ __html: logoSvg }} 
-            />
-          ) : (
-            <>
-              <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold">S</div>
-              <span className="text-xl font-bold tracking-tight">Simple Receipt Generator</span>
-            </>
-          )}
+      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100">
+        <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            {logoSvg ? (
+              <div 
+                className="h-8 w-auto flex items-center"
+                dangerouslySetInnerHTML={{ __html: logoSvg }} 
+              />
+            ) : (
+              <>
+                <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold">S</div>
+                <span className="text-xl font-bold tracking-tight">Simple Receipt Generator</span>
+              </>
+            )}
+          </div>
+          <button 
+            onClick={onAbout}
+            className="text-sm font-medium text-slate-500 hover:text-indigo-600 transition-colors"
+          >
+            About Us
+          </button>
         </div>
-        <button 
-          onClick={onAbout}
-          className="text-sm font-medium text-slate-500 hover:text-indigo-600 transition-colors"
-        >
-          About Us
-        </button>
       </nav>
 
       {/* Hero Section */}

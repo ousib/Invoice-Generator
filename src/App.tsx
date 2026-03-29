@@ -175,15 +175,28 @@ export default function App() {
       // Scroll to top to ensure html2canvas captures correctly
       window.scrollTo(0, 0);
       
+      // Small delay to ensure everything is rendered
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
       // Ensure the element is visible for capture
       const element = invoiceRef.current;
       
       const canvas = await html2canvas(element, {
-        scale: 3, // Higher scale for better quality
+        scale: 2,
         useCORS: true,
-        logging: false,
+        allowTaint: true,
+        logging: true,
         backgroundColor: '#ffffff',
-        windowWidth: 1200, // Force a consistent width for capture
+        width: element.offsetWidth,
+        height: element.offsetHeight,
+        onclone: (clonedDoc) => {
+          // Ensure the cloned element is visible
+          const clonedElement = clonedDoc.querySelector('[ref="invoiceRef"]') as HTMLElement;
+          if (clonedElement) {
+            clonedElement.style.height = 'auto';
+            clonedElement.style.aspectRatio = 'auto';
+          }
+        }
       });
       
       const imgData = canvas.toDataURL('image/png');
@@ -512,13 +525,6 @@ export default function App() {
             </div>
           </div>
 
-          {/* Ad Slot: Inline */}
-          <div className="ad-slot h-[250px] w-full rounded-2xl relative">
-            <span className="ad-label">Advertisement</span>
-            {/* Ad Slot: Inline Ad */}
-            <span className="text-center px-4">Responsive Rectangle Ad Space</span>
-          </div>
-
           {/* Line Items */}
           <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-8">
             <div className="flex items-center justify-between">
@@ -647,6 +653,13 @@ export default function App() {
               </div>
             </div>
           </div>
+
+          {/* Ad Slot: Inline (Moved under subtotal) */}
+          <div className="ad-slot h-[250px] w-full rounded-2xl relative">
+            <span className="ad-label">Advertisement</span>
+            {/* Ad Slot: Inline Ad */}
+            <span className="text-center px-4">Responsive Rectangle Ad Space</span>
+          </div>
         </section>
 
         {/* Preview Side */}
@@ -659,7 +672,7 @@ export default function App() {
           <div className="bg-slate-200 p-4 sm:p-8 rounded-3xl shadow-inner overflow-hidden print:bg-white print:p-0 print:shadow-none">
             <div 
               ref={invoiceRef}
-              className="bg-white w-full aspect-[8.5/11] shadow-2xl p-8 sm:p-16 flex flex-col print:shadow-none print:p-[20mm] print:w-[8.5in] print:h-[11in] mx-auto"
+              className="bg-white w-full min-h-[11in] shadow-2xl p-8 sm:p-16 flex flex-col print:shadow-none print:p-[20mm] print:w-[8.5in] print:h-[11in] mx-auto"
               style={{ fontSize: '13px' }}
             >
               {/* Invoice Header */}

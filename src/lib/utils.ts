@@ -40,6 +40,7 @@ export interface InvoiceData {
   clientAddress: string;
   items: InvoiceItem[];
   currency: string;
+  customCurrencySymbol?: string;
   taxRate: number;
   discount: number;
   notes: string;

@@ -85,6 +85,10 @@ export default function App() {
     fetchAssets();
   }, []);
 
+  const [showCustomCurrency, setShowCustomCurrency] = useState(() => {
+    return !CURRENCIES.find(c => c.code === data.currency);
+  });
+
   // Auto-save to localStorage
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -97,7 +101,7 @@ export default function App() {
     }
   };
 
-  const currencySymbol = CURRENCIES.find(c => c.code === data.currency)?.symbol || '$';
+  const currencySymbol = data.customCurrencySymbol || CURRENCIES.find(c => c.code === data.currency)?.symbol || data.currency || '$';
 
   const subtotal = data.items.reduce((acc, item) => acc + (item.quantity * item.price), 0);
   const taxAmount = (subtotal * data.taxRate) / 100;
@@ -306,17 +310,44 @@ export default function App() {
                   Receipt
                 </button>
               </div>
-              <div className="relative">
-                <select 
-                  value={data.currency}
-                  onChange={(e) => setData(prev => ({ ...prev, currency: e.target.value }))}
-                  className="appearance-none bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 pr-8 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
-                >
-                  {CURRENCIES.map(c => (
-                    <option key={c.code} value={c.code}>{c.code} ({c.symbol})</option>
-                  ))}
-                </select>
-                <ChevronDown className="w-4 h-4 absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+              <div className="flex flex-col gap-2">
+                <div className="relative">
+                  <select 
+                    value={showCustomCurrency ? 'CUSTOM' : data.currency}
+                    onChange={(e) => {
+                      if (e.target.value === 'CUSTOM') {
+                        setShowCustomCurrency(true);
+                        setData(prev => ({ ...prev, currency: '', customCurrencySymbol: '' }));
+                      } else {
+                        setShowCustomCurrency(false);
+                        setData(prev => ({ ...prev, currency: e.target.value, customCurrencySymbol: undefined }));
+                      }
+                    }}
+                    className="appearance-none bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 pr-8 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 w-full"
+                  >
+                    {CURRENCIES.map(c => (
+                      <option key={c.code} value={c.code}>{c.code} ({c.symbol})</option>
+                    ))}
+                    <option value="CUSTOM">Other...</option>
+                  </select>
+                  <ChevronDown className="w-4 h-4 absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                </div>
+                {showCustomCurrency && (
+                  <div className="grid grid-cols-2 gap-2 animate-in fade-in slide-in-from-top-1 duration-200">
+                    <input 
+                      placeholder="Code (e.g. JPY)"
+                      value={data.currency}
+                      onChange={(e) => setData(prev => ({ ...prev, currency: e.target.value.toUpperCase() }))}
+                      className="input-field !py-1.5 !px-2 text-xs"
+                    />
+                    <input 
+                      placeholder="Symbol (e.g. ¥)"
+                      value={data.customCurrencySymbol || ''}
+                      onChange={(e) => setData(prev => ({ ...prev, customCurrencySymbol: e.target.value }))}
+                      className="input-field !py-1.5 !px-2 text-xs"
+                    />
+                  </div>
+                )}
               </div>
             </div>
 

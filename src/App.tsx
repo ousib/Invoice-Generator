@@ -17,6 +17,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { cn, CURRENCIES, type InvoiceData, type InvoiceItem } from './lib/utils';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
+// @ts-ignore
+import html2pdf from 'html2pdf.js';
 import LandingPage from './components/LandingPage';
 import AboutPage from './components/AboutPage';
 import { GoogleGenAI } from "@google/genai";
@@ -175,57 +177,35 @@ export default function App() {
       // Scroll to top to ensure html2canvas captures correctly
       window.scrollTo(0, 0);
       
+      const element = invoiceRef.current;
+      const html2pdfFunc = (html2pdf as any).default || html2pdf;
+      console.log('Starting PDF generation with html2pdf:', html2pdfFunc);
+      
       // Small delay to ensure everything is rendered
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      // Ensure the element is visible for capture
-      const element = invoiceRef.current;
-      
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        logging: true,
-        backgroundColor: '#ffffff',
-        width: element.offsetWidth,
-        height: element.offsetHeight,
-        onclone: (clonedDoc) => {
-          // Ensure the cloned element is visible
-          const clonedElement = clonedDoc.querySelector('[ref="invoiceRef"]') as HTMLElement;
-          if (clonedElement) {
-            clonedElement.style.height = 'auto';
-            clonedElement.style.aspectRatio = 'auto';
-          }
-        }
-      });
-      
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'letter');
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      
-      // Calculate dimensions to fit the page while maintaining aspect ratio
-      const imgWidth = pdfWidth;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      
-      // If the image is taller than the page, scale it down
-      let finalWidth = imgWidth;
-      let finalHeight = imgHeight;
-      if (finalHeight > pdfHeight) {
-        finalHeight = pdfHeight;
-        finalWidth = (canvas.width * finalHeight) / canvas.height;
-      }
+      const opt = {
+        margin: [10, 10, 10, 10],
+        filename: `${data.type}-${data.invoiceNumber}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+          scale: 2, 
+          useCORS: true, 
+          letterRendering: true,
+          backgroundColor: '#ffffff'
+        },
+        jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
+      };
 
-      // Center the image on the page
-      const xOffset = (pdfWidth - finalWidth) / 2;
-      const yOffset = (pdfHeight - finalHeight) / 2;
-      
-      pdf.addImage(imgData, 'PNG', xOffset, yOffset, finalWidth, finalHeight);
-      pdf.save(`${data.type}-${data.invoiceNumber}.pdf`);
+      // New Promise-based usage:
+      await html2pdfFunc().set(opt).from(element).save();
       
       toast.success('PDF downloaded successfully!', { id: toastId });
     } catch (error) {
-      console.error('PDF Generation failed:', error);
+      console.error('PDF Generation failed with error:', error);
+      if (error instanceof Error) {
+        console.error('Error message:', error.message);
+      }
       toast.error('Failed to generate PDF. Please try again.', { id: toastId });
     } finally {
       setIsGenerating(false);
@@ -672,6 +652,7 @@ export default function App() {
           <div className="bg-slate-200 p-4 sm:p-8 rounded-3xl shadow-inner overflow-hidden print:bg-white print:p-0 print:shadow-none">
             <div 
               ref={invoiceRef}
+              id="invoice-preview"
               className="bg-white w-full min-h-[11in] shadow-2xl p-8 sm:p-16 flex flex-col print:shadow-none print:p-[20mm] print:w-[8.5in] print:h-[11in] mx-auto"
               style={{ fontSize: '13px' }}
             >

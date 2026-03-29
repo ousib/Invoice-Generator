@@ -904,9 +904,15 @@ export default function App() {
                   </>
                 )}
               </div>
-              <p className="text-slate-500 text-sm max-w-xs">
+              <p className="text-slate-500 text-sm max-w-xs mb-2">
                 The world's simplest free online invoice generator. Helping small businesses and freelancers get paid faster since 2026.
               </p>
+              <a 
+                href="mailto:gomgomtechnologies@gmail.com" 
+                className="text-xs text-slate-400 hover:text-indigo-600 transition-colors"
+              >
+                gomgomtechnologies@gmail.com
+              </a>
             </div>
             <div>
               <h4 className="font-bold text-slate-900 mb-4">Tools</h4>

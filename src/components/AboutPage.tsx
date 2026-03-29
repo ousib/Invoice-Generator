@@ -109,8 +109,14 @@ export default function AboutPage({ onBack, logoSvg }: AboutPageProps) {
         </div>
       </main>
 
-      <footer className="bg-white border-t border-slate-200 py-12 text-center">
+      <footer className="bg-white border-t border-slate-200 py-12 text-center flex flex-col items-center gap-2">
         <p className="text-slate-400 text-sm">© 2026 Simple Receipt Generator. Built for the global small business community.</p>
+        <a 
+          href="mailto:gomgomtechnologies@gmail.com" 
+          className="text-xs text-slate-400 hover:text-indigo-600 transition-colors"
+        >
+          gomgomtechnologies@gmail.com
+        </a>
       </footer>
     </div>
   );

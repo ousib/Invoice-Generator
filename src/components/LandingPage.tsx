@@ -27,12 +27,20 @@ export default function LandingPage({ onStart, onAbout, onPrivacy, logoSvg }: La
               </>
             )}
           </div>
-          <button 
-            onClick={onAbout}
-            className="text-sm font-medium text-slate-500 hover:text-indigo-600 transition-colors"
-          >
-            About Us
-          </button>
+          <div className="flex items-center gap-6">
+            <button 
+              onClick={onAbout}
+              className="text-sm font-medium text-slate-500 hover:text-indigo-600 transition-colors"
+            >
+              About Us
+            </button>
+            <button 
+              onClick={onStart}
+              className="hidden sm:block px-5 py-2.5 bg-indigo-600 text-white text-sm font-bold rounded-xl hover:bg-indigo-700 transition-all shadow-md shadow-indigo-100"
+            >
+              Create Invoice
+            </button>
+          </div>
         </div>
       </nav>
 
@@ -321,8 +329,16 @@ export default function LandingPage({ onStart, onAbout, onPrivacy, logoSvg }: La
       {/* Footer */}
       <footer className="py-12 bg-white border-t border-slate-100">
         <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-2 text-slate-400 text-sm">
-            © 2026 Simple Receipt Generator. All rights reserved.
+          <div className="flex flex-col items-center md:items-start gap-2">
+            <div className="flex items-center gap-2 text-slate-400 text-sm">
+              © 2026 Simple Receipt Generator. All rights reserved.
+            </div>
+            <a 
+              href="mailto:gomgomtechnologies@gmail.com" 
+              className="text-xs text-slate-400 hover:text-indigo-600 transition-colors"
+            >
+              gomgomtechnologies@gmail.com
+            </a>
           </div>
           <div className="flex items-center gap-8">
             <button 

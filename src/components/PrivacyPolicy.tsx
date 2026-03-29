@@ -84,7 +84,7 @@ export default function PrivacyPolicy({ onBack }: PrivacyPolicyProps) {
 
           <div className="pt-10 border-t border-slate-100">
             <p className="text-slate-400 text-sm italic">
-              If you have any questions about our Privacy Policy, please contact us at simplereceiptgenerator@gmail.com.
+              If you have any questions about our Privacy Policy, please contact us at <a href="mailto:gomgomtechnologies@gmail.com" className="text-indigo-600 hover:underline">gomgomtechnologies@gmail.com</a>.
             </p>
           </div>
         </motion.div>

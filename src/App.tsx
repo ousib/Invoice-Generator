@@ -387,7 +387,7 @@ export default function App() {
         <section className="space-y-8 no-print">
           {/* Document Type & Basic Info */}
           <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-8">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
               <div className="flex p-1.5 bg-slate-100 rounded-2xl w-full sm:w-auto">
                 <button 
                   onClick={() => setData(prev => ({ ...prev, type: 'invoice' }))}
@@ -408,7 +408,7 @@ export default function App() {
                   Receipt
                 </button>
               </div>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-3 w-full sm:w-auto sm:min-w-[160px]">
                 <div className="relative">
                   <select 
                     value={showCustomCurrency ? 'CUSTOM' : data.currency}
@@ -431,19 +431,25 @@ export default function App() {
                   <ChevronDown className="w-5 h-5 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                 </div>
                 {showCustomCurrency && (
-                  <div className="grid grid-cols-2 gap-2 animate-in fade-in slide-in-from-top-1 duration-200">
-                    <input 
-                      placeholder="Code (e.g. JPY)"
-                      value={data.currency}
-                      onChange={(e) => setData(prev => ({ ...prev, currency: e.target.value.toUpperCase() }))}
-                      className="input-field !py-1.5 !px-2 text-xs"
-                    />
-                    <input 
-                      placeholder="Symbol (e.g. ¥)"
-                      value={data.customCurrencySymbol || ''}
-                      onChange={(e) => setData(prev => ({ ...prev, customCurrencySymbol: e.target.value }))}
-                      className="input-field !py-1.5 !px-2 text-xs"
-                    />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 animate-in fade-in slide-in-from-top-1 duration-200">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 sm:hidden">Code</label>
+                      <input 
+                        placeholder="Code (e.g. JPY)"
+                        value={data.currency}
+                        onChange={(e) => setData(prev => ({ ...prev, currency: e.target.value.toUpperCase() }))}
+                        className="input-field !py-2.5 !px-4 text-sm font-bold"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 sm:hidden">Symbol</label>
+                      <input 
+                        placeholder="Symbol (e.g. ¥)"
+                        value={data.customCurrencySymbol || ''}
+                        onChange={(e) => setData(prev => ({ ...prev, customCurrencySymbol: e.target.value }))}
+                        className="input-field !py-2.5 !px-4 text-sm font-bold"
+                      />
+                    </div>
                   </div>
                 )}
               </div>

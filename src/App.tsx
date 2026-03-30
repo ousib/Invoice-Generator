@@ -19,8 +19,6 @@ import { motion, AnimatePresence } from 'motion/react';
 import { cn, CURRENCIES, type InvoiceData, type InvoiceItem } from './lib/utils';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
-// @ts-ignore
-import html2pdf from 'html2pdf.js';
 import LandingPage from './components/LandingPage';
 import AboutPage from './components/AboutPage';
 import PrivacyPolicy from './components/PrivacyPolicy';
@@ -215,31 +213,43 @@ export default function App() {
     const toastId = toast.loading('Generating PDF...');
     
     try {
-      // Scroll to top to ensure html2canvas captures correctly
-      window.scrollTo(0, 0);
-      
       const element = invoiceRef.current;
-      const html2pdfFunc = (html2pdf as any).default || html2pdf;
-      console.log('Starting PDF generation with html2pdf:', html2pdfFunc);
       
-      // Small delay to ensure everything is rendered
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Use html2canvas and jsPDF directly for better reliability in this environment
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        logging: false
+      });
       
-      const opt = {
-        margin: [10, 10, 10, 10],
-        filename: `${data.type}-${data.invoiceNumber}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { 
-          scale: 2, 
-          useCORS: true, 
-          letterRendering: true,
-          backgroundColor: '#ffffff'
-        },
-        jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
-      };
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+      
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      
+      // Basic multi-page support
+      let heightLeft = pdfHeight;
+      let position = 0;
+      const pageHeight = pdf.internal.pageSize.getHeight();
 
-      // New Promise-based usage:
-      await html2pdfFunc().set(opt).from(element).save();
+      pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft >= 0) {
+        position = heightLeft - pdfHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+        heightLeft -= pageHeight;
+      }
+      
+      pdf.save(`${data.type}-${data.invoiceNumber}.pdf`);
       
       // Add to recent receipts
       const newRecent: RecentReceipt = {
@@ -259,10 +269,7 @@ export default function App() {
 
       toast.success('PDF downloaded successfully!', { id: toastId });
     } catch (error) {
-      console.error('PDF Generation failed with error:', error);
-      if (error instanceof Error) {
-        console.error('Error message:', error.message);
-      }
+      console.error('PDF Generation failed:', error);
       toast.error('Failed to generate PDF. Please try again.', { id: toastId });
     } finally {
       setIsGenerating(false);
@@ -328,7 +335,7 @@ export default function App() {
               )}
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <button 
               onClick={handleReset}
               className="p-2 text-slate-400 hover:text-red-500 transition-colors"
@@ -338,7 +345,7 @@ export default function App() {
             </button>
             <button 
               onClick={handlePrint}
-              className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+              className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors hidden sm:block"
               title="Print"
             >
               <Printer className="w-5 h-5" />
@@ -353,7 +360,7 @@ export default function App() {
             <button 
               onClick={handleDownloadPDF}
               disabled={isGenerating}
-              className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-all disabled:opacity-50"
+              className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-3 sm:px-4 py-2 rounded-lg font-medium transition-all disabled:opacity-50"
             >
               {isGenerating ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -381,11 +388,11 @@ export default function App() {
           {/* Document Type & Basic Info */}
           <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-8">
             <div className="flex items-center justify-between">
-              <div className="flex p-1.5 bg-slate-100 rounded-2xl">
+              <div className="flex p-1.5 bg-slate-100 rounded-2xl w-full sm:w-auto">
                 <button 
                   onClick={() => setData(prev => ({ ...prev, type: 'invoice' }))}
                   className={cn(
-                    "px-4 py-2 rounded-lg text-sm font-medium transition-all",
+                    "flex-1 px-4 py-2.5 rounded-xl text-sm font-bold transition-all",
                     data.type === 'invoice' ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
                   )}
                 >
@@ -394,7 +401,7 @@ export default function App() {
                 <button 
                   onClick={() => setData(prev => ({ ...prev, type: 'receipt' }))}
                   className={cn(
-                    "px-4 py-2 rounded-lg text-sm font-medium transition-all",
+                    "flex-1 px-4 py-2.5 rounded-xl text-sm font-bold transition-all",
                     data.type === 'receipt' ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
                   )}
                 >
@@ -414,14 +421,14 @@ export default function App() {
                         setData(prev => ({ ...prev, currency: e.target.value, customCurrencySymbol: undefined }));
                       }
                     }}
-                    className="appearance-none bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 pr-8 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 w-full"
+                    className="appearance-none bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 pr-10 text-base font-bold text-slate-900 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 w-full transition-all"
                   >
                     {CURRENCIES.map(c => (
                       <option key={c.code} value={c.code}>{c.code} ({c.symbol})</option>
                     ))}
                     <option value="CUSTOM">Other...</option>
                   </select>
-                  <ChevronDown className="w-4 h-4 absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                  <ChevronDown className="w-5 h-5 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                 </div>
                 {showCustomCurrency && (
                   <div className="grid grid-cols-2 gap-2 animate-in fade-in slide-in-from-top-1 duration-200">
@@ -590,13 +597,13 @@ export default function App() {
                 <LayoutTemplate className="w-5 h-5 text-indigo-600" />
                 <h2>Line Items</h2>
               </div>
-              <button 
-                onClick={handleAddItem}
-                className="flex items-center gap-1.5 text-sm font-bold text-indigo-600 hover:text-indigo-700 px-4 py-2 bg-indigo-50 rounded-2xl transition-all"
-              >
-                <Plus className="w-4 h-4" />
-                Add Item
-              </button>
+            <button 
+              onClick={handleAddItem}
+              className="flex items-center justify-center gap-1.5 text-sm font-bold text-indigo-600 hover:text-indigo-700 px-4 py-3 bg-indigo-50 rounded-2xl transition-all w-full sm:w-auto"
+            >
+              <Plus className="w-4 h-4" />
+              Add Item
+            </button>
             </div>
 
             <div className="space-y-6">
@@ -607,9 +614,9 @@ export default function App() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    className="flex gap-4 items-start group p-6 bg-slate-50/50 rounded-2xl border border-slate-100"
+                    className="flex flex-col sm:flex-row gap-4 items-start group p-4 sm:p-6 bg-slate-50/50 rounded-2xl border border-slate-100 relative"
                   >
-                    <div className="flex-1 space-y-4">
+                    <div className="flex-1 w-full space-y-4">
                       <div className="space-y-2">
                         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Description</label>
                         <input 
@@ -619,7 +626,7 @@ export default function App() {
                           className="input-field !bg-white"
                         />
                       </div>
-                      <div className="grid grid-cols-3 gap-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
                         <div className="space-y-2">
                           <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Qty</label>
                           <input 
@@ -627,7 +634,7 @@ export default function App() {
                             inputMode="decimal"
                             value={item.quantity}
                             onChange={(e) => handleItemChange(item.id, 'quantity', parseFloat(e.target.value) || 0)}
-                            className="input-field !bg-white text-center"
+                            className="input-field !bg-white text-left sm:text-center"
                           />
                         </div>
                         <div className="space-y-2">
@@ -645,7 +652,7 @@ export default function App() {
                         </div>
                         <div className="space-y-2">
                           <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total</label>
-                          <div className="w-full text-sm font-bold text-slate-900 py-2.5 px-1">
+                          <div className="w-full text-base font-bold text-slate-900 py-3 px-4 bg-white rounded-xl border border-slate-200 sm:border-transparent sm:bg-transparent sm:py-2.5 sm:px-1">
                             {currencySymbol}{(item.quantity * item.price).toLocaleString()}
                           </div>
                         </div>
@@ -653,7 +660,7 @@ export default function App() {
                     </div>
                     <button 
                       onClick={() => handleRemoveItem(item.id)}
-                      className="mt-8 p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all opacity-0 group-hover:opacity-100"
+                      className="absolute top-2 right-2 sm:static sm:mt-8 p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all sm:opacity-0 sm:group-hover:opacity-100"
                       disabled={data.items.length === 1}
                     >
                       <Trash2 className="w-5 h-5" />

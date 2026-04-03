@@ -13,16 +13,25 @@ import {
   Info,
   ArrowLeft,
   History,
-  Share2
+  Share2,
+  LogIn,
+  LogOut,
+  User as UserIcon,
+  Cloud,
+  CloudUpload,
+  CloudDownload,
+  Save
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn, CURRENCIES, type InvoiceData, type InvoiceItem } from './lib/utils';
-import html2canvas from 'html2canvas';
+import { toCanvas } from 'html-to-image';
 import { jsPDF } from 'jspdf';
 import LandingPage from './components/LandingPage';
 import AboutPage from './components/AboutPage';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import { GoogleGenAI } from "@google/genai";
+import { supabase } from './lib/supabase';
+import type { User } from '@supabase/supabase-js';
 
 import { Toaster, toast } from 'sonner';
 
@@ -75,6 +84,18 @@ export default function App() {
   const invoiceRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<HTMLDivElement>(null);
 
+  // Auth & Cloud State
+  const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<any>(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isAuthLoading, setIsAuthLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [cloudInvoices, setCloudInvoices] = useState<any[]>([]);
+  const [showCloudHistory, setShowCloudHistory] = useState(false);
+
   const [assets, setAssets] = useState<{ logoSvg?: string; faviconSvg?: string }>({
     logoSvg: `<svg width="200" height="50" viewBox="0 0 200 50" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" x="5" y="5" rx="8" fill="#4f46e5" /><path d="M15 15h20M15 20h20M15 25h10" stroke="white" stroke-width="2" stroke-linecap="round" /><path d="M30 30l3 3 7-7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" /><text x="55" y="32" font-family="Inter, sans-serif" font-weight="bold" font-size="18" fill="#1e293b">Simple Receipt</text><text x="55" y="45" font-family="Inter, sans-serif" font-size="10" fill="#64748b">Generator</text></svg>`,
     faviconSvg: `<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><rect width="32" height="32" rx="6" fill="#4f46e5" /><path d="M8 10h16M8 14h16M8 18h8" stroke="white" stroke-width="2" stroke-linecap="round" /><path d="M20 22l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" /></svg>`
@@ -114,6 +135,198 @@ export default function App() {
     };
     fetchAssets();
   }, []);
+
+  // Supabase Auth Listener
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // Fetch profile and cloud invoices when user changes
+  useEffect(() => {
+    if (user) {
+      fetchProfile();
+      fetchCloudInvoices();
+    } else {
+      setProfile(null);
+      setCloudInvoices([]);
+    }
+  }, [user]);
+
+  const fetchProfile = async (forceSync = false) => {
+    if (!user) return;
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single();
+    
+    if (data && !error) {
+      setProfile(data);
+      if (forceSync) {
+        setData(prev => ({
+          ...prev,
+          businessName: data.business_name || prev.businessName,
+          businessEmail: data.business_email || prev.businessEmail,
+          businessPhone: data.business_phone || prev.businessPhone,
+          businessAddress: data.business_address || prev.businessAddress,
+          businessLogo: data.business_logo || prev.businessLogo,
+        }));
+        toast.success('Business details synced from profile');
+      } else {
+        // Only sync if empty
+        setData(prev => ({
+          ...prev,
+          businessName: prev.businessName || data.business_name || '',
+          businessEmail: prev.businessEmail || data.business_email || '',
+          businessPhone: prev.businessPhone || data.business_phone || '',
+          businessAddress: prev.businessAddress || data.business_address || '',
+          businessLogo: prev.businessLogo || data.business_logo || null,
+        }));
+      }
+    }
+  };
+
+  const fetchCloudInvoices = async () => {
+    if (!user) return;
+    const { data, error } = await supabase
+      .from('invoices')
+      .select('*, invoice_items(*)')
+      .order('created_at', { ascending: false });
+    
+    if (data && !error) {
+      setCloudInvoices(data);
+    }
+  };
+
+  const handleAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsAuthLoading(true);
+    try {
+      if (authMode === 'login') {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        toast.success('Logged in successfully!');
+      } else {
+        const { error } = await supabase.auth.signUp({ email, password });
+        if (error) throw error;
+        toast.success('Check your email for the confirmation link!');
+      }
+      setShowAuthModal(false);
+      setEmail('');
+      setPassword('');
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setIsAuthLoading(false);
+    }
+  };
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    toast.success('Logged out successfully');
+  };
+
+  const saveToCloud = async () => {
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
+
+    setIsSaving(true);
+    const toastId = toast.loading('Saving to cloud...');
+
+    try {
+      // 1. Update Profile (Business Details)
+      await supabase.from('profiles').update({
+        business_name: data.businessName,
+        business_email: data.businessEmail,
+        business_phone: data.businessPhone,
+        business_address: data.businessAddress,
+        business_logo: data.businessLogo,
+      }).eq('id', user.id);
+
+      // 2. Insert Invoice
+      const { data: invoice, error: invoiceError } = await supabase
+        .from('invoices')
+        .insert({
+          user_id: user.id,
+          type: data.type,
+          invoice_number: data.invoiceNumber,
+          date: data.date,
+          due_date: data.dueDate,
+          client_name: data.clientName,
+          client_email: data.clientEmail,
+          client_address: data.clientAddress,
+          currency: data.currency,
+          tax_rate: data.taxRate,
+          discount: data.discount,
+          notes: data.notes,
+        })
+        .select()
+        .single();
+
+      if (invoiceError) throw invoiceError;
+
+      // 3. Insert Items
+      const itemsToInsert = data.items.map((item) => ({
+        invoice_id: invoice.id,
+        description: item.description,
+        quantity: item.quantity,
+        price: item.price,
+      }));
+
+      const { error: itemsError } = await supabase
+        .from('invoice_items')
+        .insert(itemsToInsert);
+
+      if (itemsError) throw itemsError;
+
+      toast.success('Invoice saved to cloud!', { id: toastId });
+      fetchCloudInvoices();
+    } catch (error: any) {
+      toast.error(error.message, { id: toastId });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const loadCloudInvoice = (cloudInvoice: any) => {
+    const mappedData: InvoiceData = {
+      type: cloudInvoice.type,
+      invoiceNumber: cloudInvoice.invoice_number,
+      date: cloudInvoice.date,
+      dueDate: cloudInvoice.due_date,
+      businessName: profile?.business_name || data.businessName,
+      businessEmail: profile?.business_email || data.businessEmail,
+      businessPhone: profile?.business_phone || data.businessPhone,
+      businessAddress: profile?.business_address || data.businessAddress,
+      businessLogo: profile?.business_logo || data.businessLogo,
+      clientName: cloudInvoice.client_name,
+      clientEmail: cloudInvoice.client_email,
+      clientAddress: cloudInvoice.client_address,
+      items: cloudInvoice.invoice_items.map((item: any) => ({
+        id: item.id,
+        description: item.description,
+        quantity: item.quantity,
+        price: item.price,
+      })),
+      currency: cloudInvoice.currency,
+      taxRate: cloudInvoice.tax_rate,
+      discount: cloudInvoice.discount,
+      notes: cloudInvoice.notes,
+    };
+    setData(mappedData);
+    setShowCloudHistory(false);
+    toast.success('Invoice loaded from cloud');
+  };
 
   const [showCustomCurrency, setShowCustomCurrency] = useState(() => {
     return !CURRENCIES.find(c => c.code === data.currency);
@@ -183,23 +396,34 @@ export default function App() {
   };
 
   const handlePrint = () => {
+    toast.info('Opening print dialog...');
+    window.focus();
     window.print();
   };
 
   const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: 'Simple Receipt Generator',
-          text: 'Create professional invoices and receipts for free!',
-          url: window.location.origin,
-        });
-      } catch (error) {
-        console.error('Error sharing:', error);
+    const shareData = {
+      title: 'Simple Receipt Generator',
+      text: 'Create professional invoices and receipts for free!',
+      url: window.location.origin,
+    };
+
+    try {
+      if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+        await navigator.share(shareData);
+        return;
       }
-    } else {
-      navigator.clipboard.writeText(window.location.origin);
+    } catch (error) {
+      console.error('Error sharing:', error);
+      // Fall through to clipboard fallback
+    }
+
+    try {
+      await navigator.clipboard.writeText(window.location.origin);
       toast.success('Link copied to clipboard!');
+    } catch (err) {
+      console.error('Clipboard failed:', err);
+      toast.error('Failed to copy link');
     }
   };
 
@@ -215,21 +439,24 @@ export default function App() {
     try {
       const element = invoiceRef.current;
       
-      // Use html2canvas and jsPDF directly for better reliability in this environment
-      const canvas = await html2canvas(element, {
-        scale: 3, // Higher scale for better quality
-        useCORS: true,
+      // Use html-to-image for better reliability with modern CSS like oklch
+      const canvas = await toCanvas(element, {
+        quality: 1,
+        pixelRatio: 2, // 2 is usually enough and faster
         backgroundColor: '#ffffff',
-        logging: false,
-        windowWidth: 1200, // Force desktop-like width for consistent layout
-        onclone: (clonedDoc) => {
-          const el = clonedDoc.getElementById('invoice-preview');
-          if (el) {
-            el.style.boxShadow = 'none';
-            el.style.borderRadius = '0';
-            // Ensure all text is visible and colors are forced
-            el.style.color = '#0f172a';
-          }
+        width: 800,
+        style: {
+          boxShadow: 'none',
+          borderRadius: '0',
+          transform: 'none',
+          margin: '0',
+          padding: '60px',
+          minHeight: '0',
+          maxHeight: 'none',
+          height: 'auto',
+          width: '800px',
+          display: 'flex',
+          flexDirection: 'column'
         }
       });
       
@@ -244,19 +471,27 @@ export default function App() {
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
       
-      // Basic multi-page support
-      let heightLeft = pdfHeight;
-      let position = 0;
       const pageHeight = pdf.internal.pageSize.getHeight();
+      
+      // If the invoice is just slightly longer than one page, scale it down to fit
+      // This avoids awkward splits for minor overflows
+      if (pdfHeight > pageHeight && pdfHeight < pageHeight * 1.1) {
+        const scaleFactor = pageHeight / pdfHeight;
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight * scaleFactor, undefined, 'FAST');
+      } else {
+        // Standard multi-page support
+        let heightLeft = pdfHeight;
+        let position = 0;
 
-      pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight, undefined, 'FAST');
-      heightLeft -= pageHeight;
-
-      while (heightLeft >= 0) {
-        position = heightLeft - pdfHeight;
-        pdf.addPage();
         pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight, undefined, 'FAST');
         heightLeft -= pageHeight;
+
+        while (heightLeft > 0) {
+          position = heightLeft - pdfHeight;
+          pdf.addPage();
+          pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight, undefined, 'FAST');
+          heightLeft -= pageHeight;
+        }
       }
       
       pdf.save(`${data.type}-${data.invoiceNumber}.pdf`);
@@ -355,7 +590,7 @@ export default function App() {
             </button>
             <button 
               onClick={handlePrint}
-              className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors hidden sm:block"
+              className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
               title="Print"
             >
               <Printer className="w-5 h-5" />
@@ -367,6 +602,54 @@ export default function App() {
             >
               <Share2 className="w-5 h-5" />
             </button>
+
+            {/* Cloud Save Button */}
+            <button 
+              onClick={saveToCloud}
+              disabled={isSaving}
+              className={cn(
+                "p-2 rounded-lg transition-colors flex items-center gap-2",
+                user ? "text-indigo-600 hover:bg-indigo-50" : "text-slate-400 hover:text-slate-600"
+              )}
+              title={user ? "Save to Cloud" : "Login to save to cloud"}
+            >
+              {isSaving ? (
+                <div className="w-5 h-5 border-2 border-indigo-600/30 border-t-indigo-600 rounded-full animate-spin" />
+              ) : (
+                <CloudUpload className="w-5 h-5" />
+              )}
+              <span className="hidden lg:inline text-sm font-bold">Save</span>
+            </button>
+
+            {/* User Menu / Auth Button */}
+            {user ? (
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => setShowCloudHistory(true)}
+                  className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                  title="Cloud History"
+                >
+                  <CloudDownload className="w-5 h-5" />
+                </button>
+                <button 
+                  onClick={handleSignOut}
+                  className="p-2 text-slate-400 hover:text-red-500 transition-colors"
+                  title="Sign Out"
+                >
+                  <LogOut className="w-5 h-5" />
+                </button>
+              </div>
+            ) : (
+              <button 
+                onClick={() => setShowAuthModal(true)}
+                className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors flex items-center gap-2"
+                title="Login / Sign Up"
+              >
+                <LogIn className="w-5 h-5" />
+                <span className="hidden sm:inline text-sm font-bold">Login</span>
+              </button>
+            )}
+
             <button 
               onClick={handleDownloadPDF}
               disabled={isGenerating}
@@ -490,9 +773,20 @@ export default function App() {
 
           {/* Business Details */}
           <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-8">
-            <div className="flex items-center gap-2 text-slate-900 font-bold text-lg">
-              <Settings2 className="w-5 h-5 text-indigo-600" />
-              <h2>Business Details</h2>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-slate-900 font-bold text-lg">
+                <Settings2 className="w-5 h-5 text-indigo-600" />
+                <h2>Business Details</h2>
+              </div>
+              {user && profile && (
+                <button 
+                  onClick={() => fetchProfile(true)}
+                  className="text-xs font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 bg-indigo-50 px-3 py-1.5 rounded-full transition-colors"
+                >
+                  <CloudDownload className="w-3.5 h-3.5" />
+                  Sync from Profile
+                </button>
+              )}
             </div>
             
             <div className="flex flex-col sm:flex-row gap-8">
@@ -966,6 +1260,167 @@ export default function App() {
         </div>
       </footer>
 
+      {/* Auth Modal */}
+      <AnimatePresence>
+        {showAuthModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm no-print">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden"
+            >
+              <div className="p-8">
+                <div className="flex justify-between items-center mb-8">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white">
+                      <UserIcon className="w-6 h-6" />
+                    </div>
+                    <h2 className="text-2xl font-black text-slate-900">
+                      {authMode === 'login' ? 'Welcome Back' : 'Create Account'}
+                    </h2>
+                  </div>
+                  <button 
+                    onClick={() => setShowAuthModal(false)}
+                    className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-all"
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+
+                <form onSubmit={handleAuth} className="space-y-6">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
+                    <input 
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="input-field"
+                      placeholder="you@example.com"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Password</label>
+                    <input 
+                      type="password"
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="input-field"
+                      placeholder="••••••••"
+                    />
+                  </div>
+
+                  <button 
+                    type="submit"
+                    disabled={isAuthLoading}
+                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-2xl font-bold text-lg shadow-lg shadow-indigo-200 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {isAuthLoading ? (
+                      <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      <>
+                        {authMode === 'login' ? <LogIn className="w-5 h-5" /> : <UserIcon className="w-5 h-5" />}
+                        {authMode === 'login' ? 'Sign In' : 'Sign Up'}
+                      </>
+                    )}
+                  </button>
+                </form>
+
+                <div className="mt-8 pt-8 border-t border-slate-100 text-center">
+                  <p className="text-slate-500 font-medium">
+                    {authMode === 'login' ? "Don't have an account?" : "Already have an account?"}
+                    <button 
+                      onClick={() => setAuthMode(authMode === 'login' ? 'signup' : 'login')}
+                      className="ml-2 text-indigo-600 font-bold hover:underline"
+                    >
+                      {authMode === 'login' ? 'Sign Up' : 'Sign In'}
+                    </button>
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Cloud History Modal */}
+      <AnimatePresence>
+        {showCloudHistory && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm no-print">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden max-h-[80vh] flex flex-col"
+            >
+              <div className="p-8 border-b border-slate-100">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white">
+                      <Cloud className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-black text-slate-900">Cloud History</h2>
+                      <p className="text-sm text-slate-500 font-medium">Your saved invoices and receipts</p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => setShowCloudHistory(false)}
+                    className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-all"
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-8 space-y-4">
+                {cloudInvoices.length === 0 ? (
+                  <div className="text-center py-12">
+                    <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Cloud className="w-8 h-8 text-slate-300" />
+                    </div>
+                    <p className="text-slate-500 font-medium">No invoices saved to cloud yet.</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 gap-4">
+                    {cloudInvoices.map((invoice) => (
+                      <button
+                        key={invoice.id}
+                        onClick={() => loadCloudInvoice(invoice)}
+                        className="w-full flex items-center justify-between p-6 rounded-2xl border border-slate-100 hover:border-indigo-200 hover:bg-indigo-50/50 transition-all text-left group"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 bg-white rounded-xl border border-slate-100 flex items-center justify-center text-indigo-600 group-hover:scale-110 transition-transform">
+                            <FileText className="w-6 h-6" />
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="text-lg font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
+                              {invoice.invoice_number}
+                            </span>
+                            <span className="text-sm text-slate-500 font-medium">{invoice.client_name || 'No Client'}</span>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-lg font-bold text-slate-900">
+                            {CURRENCIES.find(c => c.code === invoice.currency)?.symbol || invoice.currency}
+                            {(invoice.invoice_items?.reduce((acc: number, item: any) => acc + (item.quantity * item.price), 0) || 0).toLocaleString()}
+                          </div>
+                          <div className="text-xs text-slate-400 font-bold uppercase tracking-wider">
+                            {new Date(invoice.created_at).toLocaleDateString()}
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* Mobile Sticky Ad */}
       <div className="fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-slate-200 sm:hidden z-50 flex items-center justify-center no-print">
         <div className="ad-slot h-full w-full">
@@ -973,6 +1428,7 @@ export default function App() {
           <span className="text-[10px]">Mobile Advertisement</span>
         </div>
       </div>
+      <Toaster position="bottom-right" />
     </div>
   );
 }

@@ -215,9 +215,13 @@ export default function App() {
         if (error) throw error;
         toast.success('Logged in successfully!');
       } else {
-        const { error } = await supabase.auth.signUp({ email, password });
+        const { data, error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
-        toast.success('Check your email for the confirmation link!');
+        if (data.session) {
+          toast.success('Account created and logged in!');
+        } else {
+          toast.success('Check your email for the confirmation link!');
+        }
       }
       setShowAuthModal(false);
       setEmail('');
@@ -603,50 +607,28 @@ export default function App() {
               <Share2 className="w-5 h-5" />
             </button>
 
-            {/* Cloud Save Button */}
-            <button 
-              onClick={saveToCloud}
-              disabled={isSaving}
-              className={cn(
-                "p-2 rounded-lg transition-colors flex items-center gap-2",
-                user ? "text-indigo-600 hover:bg-indigo-50" : "text-slate-400 hover:text-slate-600"
-              )}
-              title={user ? "Save to Cloud" : "Login to save to cloud"}
-            >
-              {isSaving ? (
-                <div className="w-5 h-5 border-2 border-indigo-600/30 border-t-indigo-600 rounded-full animate-spin" />
-              ) : (
-                <CloudUpload className="w-5 h-5" />
-              )}
-              <span className="hidden lg:inline text-sm font-bold">Save</span>
-            </button>
-
             {/* User Menu / Auth Button */}
             {user ? (
               <div className="flex items-center gap-2">
                 <button 
                   onClick={() => setShowCloudHistory(true)}
-                  className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
-                  title="Cloud History"
+                  className="px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
                 >
-                  <CloudDownload className="w-5 h-5" />
+                  Cloud History
                 </button>
                 <button 
                   onClick={handleSignOut}
-                  className="p-2 text-slate-400 hover:text-red-500 transition-colors"
-                  title="Sign Out"
+                  className="px-3 py-2 text-sm font-bold text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                 >
-                  <LogOut className="w-5 h-5" />
+                  Sign Out
                 </button>
               </div>
             ) : (
               <button 
                 onClick={() => setShowAuthModal(true)}
-                className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors flex items-center gap-2"
-                title="Login / Sign Up"
+                className="px-4 py-2 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 rounded-lg text-sm font-bold transition-colors"
               >
-                <LogIn className="w-5 h-5" />
-                <span className="hidden sm:inline text-sm font-bold">Login</span>
+                Login
               </button>
             )}
 
@@ -1199,6 +1181,20 @@ export default function App() {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Save to Cloud Button */}
+          <div className="mt-6 no-print">
+            <button 
+              onClick={saveToCloud}
+              disabled={isSaving}
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-4 rounded-2xl font-bold text-lg shadow-lg shadow-indigo-200 transition-all disabled:opacity-50 flex items-center justify-center gap-3"
+            >
+              {isSaving && (
+                <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+              )}
+              <span>{user ? "Save to Cloud" : "Login to Save to Cloud"}</span>
+            </button>
           </div>
         </section>
       </main>

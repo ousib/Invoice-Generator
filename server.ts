@@ -1,6 +1,5 @@
 import express from "express";
 import path from "path";
-import { createServer as createViteServer } from "vite";
 
 async function startServer() {
   const app = express();
@@ -46,6 +45,7 @@ async function startServer() {
 
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
+    const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
@@ -53,7 +53,9 @@ async function startServer() {
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), 'dist');
+    // Serve static files first
     app.use(express.static(distPath));
+    // SPA fallback: handle all other routes by serving index.html
     app.get('*', (req, res) => {
       res.sendFile(path.join(distPath, 'index.html'));
     });

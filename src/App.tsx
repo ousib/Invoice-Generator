@@ -23,6 +23,7 @@ import {
   Save
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { cn, CURRENCIES, type InvoiceData, type InvoiceItem } from './lib/utils';
 import { toCanvas } from 'html-to-image';
 import { jsPDF } from 'jspdf';
@@ -69,6 +70,8 @@ interface RecentReceipt {
 }
 
 export default function App() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [data, setData] = useState<InvoiceData>(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     return saved ? JSON.parse(saved) : INITIAL_DATA;
@@ -78,9 +81,6 @@ export default function App() {
     return saved ? JSON.parse(saved) : [];
   });
   const [isGenerating, setIsGenerating] = useState(false);
-  const [showLanding, setShowLanding] = useState(true);
-  const [showAbout, setShowAbout] = useState(false);
-  const [showPrivacy, setShowPrivacy] = useState(false);
   const invoiceRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<HTMLDivElement>(null);
 
@@ -360,7 +360,7 @@ export default function App() {
   const total = subtotal + taxAmount - data.discount;
 
   const handleStart = () => {
-    setShowLanding(false);
+    navigate('/generate-invoice');
     setTimeout(() => {
       editorRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, 100);
@@ -525,140 +525,143 @@ export default function App() {
     }
   };
 
-  if (showAbout) {
-    return (
-      <>
-        <Toaster position="top-center" richColors />
-        <AboutPage onBack={() => setShowAbout(false)} logoSvg={assets.logoSvg} />
-      </>
-    );
-  }
-
-  if (showPrivacy) {
-    return (
-      <>
-        <Toaster position="top-center" richColors />
-        <PrivacyPolicy onBack={() => setShowPrivacy(false)} />
-      </>
-    );
-  }
-
-  if (showLanding) {
-    return (
-      <>
-        <Toaster position="top-center" richColors />
-        <LandingPage 
-          onStart={handleStart} 
-          onAbout={() => setShowAbout(true)} 
-          onPrivacy={() => setShowPrivacy(true)}
-          logoSvg={assets.logoSvg} 
-        />
-      </>
-    );
-  }
-
   return (
-    <div className="min-h-screen flex flex-col" ref={editorRef}>
-      <Toaster position="top-center" richColors />
-      {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-50 no-print">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <button 
-              onClick={() => setShowLanding(true)}
-              className="p-2 text-slate-400 hover:text-slate-600 transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </button>
-            <div className="flex items-center gap-2">
-              {assets.logoSvg ? (
-                <div 
-                  className="h-8 w-auto flex items-center"
-                  dangerouslySetInnerHTML={{ __html: assets.logoSvg }} 
-                />
-              ) : (
-                <>
-                  <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold">S</div>
-                  <h1 className="text-xl font-bold tracking-tight hidden sm:block">Simple Receipt Generator</h1>
-                </>
-              )}
-            </div>
-          </div>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <button 
-              onClick={handleReset}
-              className="p-2 text-slate-400 hover:text-red-500 transition-colors"
-              title="Reset"
-            >
-              <Trash2 className="w-5 h-5" />
-            </button>
-            <button 
-              onClick={handlePrint}
-              className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
-              title="Print"
-            >
-              <Printer className="w-5 h-5" />
-            </button>
-            <button 
-              onClick={handleShare}
-              className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
-              title="Share"
-            >
-              <Share2 className="w-5 h-5" />
-            </button>
+    <Routes>
+      <Route 
+        path="/" 
+        element={
+          <>
+            <Toaster position="top-center" richColors />
+            <LandingPage 
+              onStart={handleStart} 
+              onAbout={() => navigate('/about')} 
+              onPrivacy={() => navigate('/privacy')}
+              logoSvg={assets.logoSvg} 
+            />
+          </>
+        } 
+      />
+      <Route 
+        path="/about" 
+        element={
+          <>
+            <Toaster position="top-center" richColors />
+            <AboutPage onBack={() => navigate('/')} logoSvg={assets.logoSvg} />
+          </>
+        } 
+      />
+      <Route 
+        path="/privacy" 
+        element={
+          <>
+            <Toaster position="top-center" richColors />
+            <PrivacyPolicy onBack={() => navigate('/')} />
+          </>
+        } 
+      />
+      <Route 
+        path="/generate-invoice" 
+        element={
+          <div className="min-h-screen flex flex-col" ref={editorRef}>
+            <Toaster position="top-center" richColors />
+            {/* Header */}
+            <header className="bg-white border-b border-slate-200 sticky top-0 z-50 no-print">
+              <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <button 
+                    onClick={() => navigate('/')}
+                    className="p-2 text-slate-400 hover:text-slate-600 transition-colors"
+                  >
+                    <ArrowLeft className="w-5 h-5" />
+                  </button>
+                  <div className="flex items-center gap-2">
+                    {assets.logoSvg ? (
+                      <div 
+                        className="h-8 w-auto flex items-center"
+                        dangerouslySetInnerHTML={{ __html: assets.logoSvg }} 
+                      />
+                    ) : (
+                      <>
+                        <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold">S</div>
+                        <h1 className="text-xl font-bold tracking-tight hidden sm:block">Simple Receipt Generator</h1>
+                      </>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <button 
+                    onClick={handleReset}
+                    className="p-2 text-slate-400 hover:text-red-500 transition-colors"
+                    title="Reset"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                  <button 
+                    onClick={handlePrint}
+                    className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                    title="Print"
+                  >
+                    <Printer className="w-5 h-5" />
+                  </button>
+                  <button 
+                    onClick={handleShare}
+                    className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                    title="Share"
+                  >
+                    <Share2 className="w-5 h-5" />
+                  </button>
 
-            {/* User Menu / Auth Button */}
-            {user ? (
-              <div className="flex items-center gap-2">
-                <button 
-                  onClick={() => setShowCloudHistory(true)}
-                  className="px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
-                >
-                  Cloud History
-                </button>
-                <button 
-                  onClick={handleSignOut}
-                  className="px-3 py-2 text-sm font-bold text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                >
-                  Sign Out
-                </button>
+                  {/* User Menu / Auth Button */}
+                  {user ? (
+                    <div className="flex items-center gap-2">
+                      <button 
+                        onClick={() => setShowCloudHistory(true)}
+                        className="px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                      >
+                        Cloud History
+                      </button>
+                      <button 
+                        onClick={handleSignOut}
+                        className="px-3 py-2 text-sm font-bold text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                      >
+                        Sign Out
+                      </button>
+                    </div>
+                  ) : (
+                    <button 
+                      onClick={() => setShowAuthModal(true)}
+                      className="px-4 py-2 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 rounded-lg text-sm font-bold transition-colors"
+                    >
+                      Login
+                    </button>
+                  )}
+
+                  <button 
+                    onClick={handleDownloadPDF}
+                    disabled={isGenerating}
+                    className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-3 sm:px-4 py-2 rounded-lg font-medium transition-all disabled:opacity-50"
+                  >
+                    {isGenerating ? (
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      <Download className="w-5 h-5" />
+                    )}
+                    <span className="hidden sm:inline">Download PDF</span>
+                  </button>
+                </div>
               </div>
-            ) : (
-              <button 
-                onClick={() => setShowAuthModal(true)}
-                className="px-4 py-2 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 rounded-lg text-sm font-bold transition-colors"
-              >
-                Login
-              </button>
-            )}
+            </header>
 
-            <button 
-              onClick={handleDownloadPDF}
-              disabled={isGenerating}
-              className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-3 sm:px-4 py-2 rounded-lg font-medium transition-all disabled:opacity-50"
-            >
-              {isGenerating ? (
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : (
-                <Download className="w-5 h-5" />
-              )}
-              <span className="hidden sm:inline">Download PDF</span>
-            </button>
-          </div>
-        </div>
-      </header>
+            {/* Ad Slot: Top Banner */}
+            <div className="max-w-7xl mx-auto w-full px-4 py-4 no-print">
+              <div className="ad-slot h-[90px] w-full max-w-[728px] mx-auto rounded-xl relative">
+                <span className="ad-label">Advertisement</span>
+                {/* Ad Slot: Top Banner (728x90) */}
+                <span className="text-center px-4">Leaderboard Ad Space</span>
+              </div>
+            </div>
 
-      {/* Ad Slot: Top Banner */}
-      <div className="max-w-7xl mx-auto w-full px-4 py-4 no-print">
-        <div className="ad-slot h-[90px] w-full max-w-[728px] mx-auto rounded-xl relative">
-          <span className="ad-label">Advertisement</span>
-          {/* Ad Slot: Top Banner (728x90) */}
-          <span className="text-center px-4">Leaderboard Ad Space</span>
-        </div>
-      </div>
-
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Editor Side */}
+            <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
         <section className="space-y-8 no-print">
           {/* Document Type & Basic Info */}
           <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-8">
@@ -1230,17 +1233,17 @@ export default function App() {
             <div>
               <h4 className="font-bold text-slate-900 mb-4">Tools</h4>
               <ul className="space-y-2 text-sm text-slate-500">
-                <li><button onClick={() => { setShowLanding(false); setData(prev => ({ ...prev, type: 'invoice' })); }} className="hover:text-indigo-600">Free Invoice Generator</button></li>
-                <li><button onClick={() => { setShowLanding(false); setData(prev => ({ ...prev, type: 'receipt' })); }} className="hover:text-indigo-600">Receipt Maker Online</button></li>
-                <li><button onClick={() => setShowLanding(true)} className="hover:text-indigo-600">Simple Invoice Maker</button></li>
+                <li><button onClick={() => { navigate('/generate-invoice'); setData(prev => ({ ...prev, type: 'invoice' })); }} className="hover:text-indigo-600">Free Invoice Generator</button></li>
+                <li><button onClick={() => { navigate('/generate-invoice'); setData(prev => ({ ...prev, type: 'receipt' })); }} className="hover:text-indigo-600">Receipt Maker Online</button></li>
+                <li><button onClick={() => navigate('/')} className="hover:text-indigo-600">Simple Invoice Maker</button></li>
               </ul>
             </div>
             <div>
               <h4 className="font-bold text-slate-900 mb-4">Support</h4>
               <ul className="space-y-2 text-sm text-slate-500">
-                <li><button onClick={() => setShowAbout(true)} className="hover:text-indigo-600">About Us</button></li>
+                <li><button onClick={() => navigate('/about')} className="hover:text-indigo-600">About Us</button></li>
                 <li><a href="#" className="hover:text-indigo-600">Help Center</a></li>
-                <li><a href="#" className="hover:text-indigo-600">Privacy Policy</a></li>
+                <li><button onClick={() => navigate('/privacy')} className="hover:text-indigo-600">Privacy Policy</button></li>
                 <li><a href="#" className="hover:text-indigo-600">Terms of Service</a></li>
               </ul>
             </div>
@@ -1425,6 +1428,10 @@ export default function App() {
         </div>
       </div>
       <Toaster position="bottom-right" />
-    </div>
+          </div>
+        } 
+      />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }

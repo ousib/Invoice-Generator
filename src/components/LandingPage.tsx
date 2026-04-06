@@ -122,7 +122,7 @@ export default function LandingPage({ onStart, onAbout, onPrivacy, logoSvg }: La
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-3">Privacy First</h3>
               <p className="text-slate-500 leading-relaxed">
-                We don't store your business or client data on our servers. Your information stays in your browser until you download the PDF.
+                Your data is secure. We use industry-standard encryption to protect your information, whether it's stored locally in your browser or saved securely in our cloud database.
               </p>
             </div>
             <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
@@ -166,7 +166,7 @@ export default function LandingPage({ onStart, onAbout, onPrivacy, logoSvg }: La
             <div>
               <h3 className="text-lg font-bold text-slate-900 mb-2">Is my data secure?</h3>
               <p className="text-slate-600">
-                Since we don't require a login and don't store your data on our servers, your business information is as secure as your own device.
+                Yes. We use secure cloud storage (Supabase) with row-level security to ensure your data is only accessible to you. You can also choose to work entirely locally if you prefer.
               </p>
             </div>
           </div>

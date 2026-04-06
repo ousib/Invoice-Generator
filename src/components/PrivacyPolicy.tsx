@@ -42,10 +42,10 @@ export default function PrivacyPolicy({ onBack }: PrivacyPolicyProps) {
               <h2>Data Collection & Storage</h2>
             </div>
             <p className="text-slate-600 leading-relaxed">
-              Simple Receipt Generator is designed with privacy as a priority. We do not store your invoice data on our servers. All information you enter (business details, client info, line items) is stored locally in your browser's memory (LocalStorage) so you can resume your work later. 
+              Simple Receipt Generator is designed with privacy as a priority. We use secure cloud storage (Supabase) to store your invoice data if you choose to save it. This data is protected by row-level security, ensuring that only you can access it.
             </p>
             <p className="text-slate-600 leading-relaxed">
-              When you generate a PDF, the conversion happens entirely within your browser. No data is transmitted to our backend for processing.
+              You can also choose to work entirely locally. In this case, all information you enter (business details, client info, line items) is stored locally in your browser's memory (LocalStorage) so you can resume your work later.
             </p>
           </section>
 

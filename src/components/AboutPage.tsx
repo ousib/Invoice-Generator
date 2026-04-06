@@ -62,7 +62,7 @@ export default function AboutPage({ onBack, logoSvg }: AboutPageProps) {
             </div>
             <h2 className="text-2xl font-bold text-slate-900">Privacy First</h2>
             <p className="text-slate-600 leading-relaxed">
-              Your data is yours. We don't store your business details, client information, or financial records on our servers. Everything happens locally in your browser, ensuring maximum privacy and security.
+              Your data is yours. We offer secure cloud storage (Supabase) so you can access your invoices from any device, protected by row-level security. You can also choose to work entirely locally in your browser for maximum privacy.
             </p>
           </div>
 

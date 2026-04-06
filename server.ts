@@ -7,6 +7,12 @@ async function startServer() {
 
   app.use(express.json({ limit: '10mb' }));
 
+  // Explicitly serve the OG image with correct content-type
+  app.get("/og-image.jpg", (req, res) => {
+    res.setHeader('Content-Type', 'image/jpeg');
+    res.sendFile(path.join(process.cwd(), "public", "og-image.jpg"));
+  });
+
   app.get("/api/assets", async (req, res) => {
     const fs = await import('fs/promises');
     const path = 'generated_assets.json';

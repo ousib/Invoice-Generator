@@ -109,8 +109,13 @@ export default function AboutPage({ onBack, logoSvg }: AboutPageProps) {
         </div>
       </main>
 
-      <footer className="bg-white border-t border-slate-200 py-12 text-center flex flex-col items-center gap-2">
-        <p className="text-slate-400 text-sm">© 2026 Simple Receipt Generator. Built for the global small business community.</p>
+      <footer className="bg-white border-t border-slate-200 py-12 text-center flex flex-col items-center gap-6">
+        <div className="flex flex-wrap justify-center gap-6">
+          <button onClick={onBack} className="text-sm font-medium text-slate-500 hover:text-indigo-600 transition-colors">Home</button>
+          <p className="text-sm font-medium text-slate-900">About Us</p>
+          <a href="mailto:gomgomtechnologies@gmail.com" className="text-sm font-medium text-slate-500 hover:text-indigo-600 transition-colors">Contact</a>
+        </div>
+        <p className="text-slate-400 text-sm max-w-md">© 2026 Simple Receipt Generator. Built for the global small business community. We are dedicated to providing free, high-quality billing tools for entrepreneurs everywhere.</p>
         <a 
           href="mailto:gomgomtechnologies@gmail.com" 
           className="text-xs text-slate-400 hover:text-indigo-600 transition-colors"

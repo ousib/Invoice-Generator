@@ -23,13 +23,17 @@ import {
   Save
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, useLocation, Navigate, useParams } from 'react-router-dom';
 import { cn, CURRENCIES, type InvoiceData, type InvoiceItem } from './lib/utils';
 import { toCanvas } from 'html-to-image';
 import { jsPDF } from 'jspdf';
 import LandingPage from './components/LandingPage';
 import AboutPage from './components/AboutPage';
 import PrivacyPolicy from './components/PrivacyPolicy';
+import TermsOfService from './components/TermsOfService';
+import ContactPage from './components/ContactPage';
+import BlogPage from './components/BlogPage';
+import BlogPost from './components/BlogPost';
 import { GoogleGenAI } from "@google/genai";
 import { supabase } from './lib/supabase';
 import type { User } from '@supabase/supabase-js';
@@ -67,6 +71,16 @@ interface RecentReceipt {
   currency: string;
   date: string;
   data: InvoiceData;
+}
+
+function BlogWrapper({ onBack }: { onBack: () => void }) {
+  const { slug } = useParams();
+  return (
+    <>
+      <Toaster position="top-center" richColors />
+      <BlogPost slug={slug || ''} onBack={onBack} />
+    </>
+  );
 }
 
 export default function App() {
@@ -107,6 +121,14 @@ export default function App() {
       title = 'About Us | Simple Receipt Generator';
     } else if (path === '/privacy') {
       title = 'Privacy Policy | Simple Receipt Generator';
+    } else if (path === '/terms') {
+      title = 'Terms of Service | Simple Receipt Generator';
+    } else if (path === '/contact') {
+      title = 'Contact Us | Simple Receipt Generator';
+    } else if (path === '/blog') {
+      title = 'Resources & Guides | Simple Receipt Generator';
+    } else if (path.startsWith('/blog/')) {
+      title = 'Blog | Simple Receipt Generator';
     }
     
     document.title = title;
@@ -552,6 +574,9 @@ export default function App() {
               onStart={handleStart} 
               onAbout={() => navigate('/about')} 
               onPrivacy={() => navigate('/privacy')}
+              onTerms={() => navigate('/terms')}
+              onContact={() => navigate('/contact')}
+              onBlog={() => navigate('/blog')}
               logoSvg={assets.logoSvg} 
             />
           </>
@@ -573,6 +598,39 @@ export default function App() {
             <Toaster position="top-center" richColors />
             <PrivacyPolicy onBack={() => navigate('/')} />
           </>
+        } 
+      />
+      <Route 
+        path="/terms" 
+        element={
+          <>
+            <Toaster position="top-center" richColors />
+            <TermsOfService onBack={() => navigate('/')} />
+          </>
+        } 
+      />
+      <Route 
+        path="/contact" 
+        element={
+          <>
+            <Toaster position="top-center" richColors />
+            <ContactPage onBack={() => navigate('/')} />
+          </>
+        } 
+      />
+      <Route 
+        path="/blog" 
+        element={
+          <>
+            <Toaster position="top-center" richColors />
+            <BlogPage onBack={() => navigate('/')} onPostClick={(slug) => navigate(`/blog/${slug}`)} />
+          </>
+        } 
+      />
+      <Route 
+        path="/blog/:slug" 
+        element={
+          <BlogWrapper onBack={() => navigate('/blog')} />
         } 
       />
       <Route 

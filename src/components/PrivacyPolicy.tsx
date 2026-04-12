@@ -89,6 +89,15 @@ export default function PrivacyPolicy({ onBack }: PrivacyPolicyProps) {
           </div>
         </motion.div>
       </main>
+
+      <footer className="bg-white border-t border-slate-200 py-12 text-center flex flex-col items-center gap-6 no-print">
+        <div className="flex flex-wrap justify-center gap-6">
+          <button onClick={onBack} className="text-sm font-medium text-slate-500 hover:text-indigo-600 transition-colors">Home</button>
+          <a href="mailto:gomgomtechnologies@gmail.com" className="text-sm font-medium text-slate-500 hover:text-indigo-600 transition-colors">Contact</a>
+          <p className="text-sm font-medium text-slate-900">Privacy Policy</p>
+        </div>
+        <p className="text-slate-400 text-sm max-w-md">© 2026 Simple Receipt Generator. Your privacy is our priority. We use industry-standard security to protect your data.</p>
+      </footer>
     </div>
   );
 }

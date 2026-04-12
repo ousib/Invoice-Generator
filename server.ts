@@ -7,9 +7,10 @@ async function startServer() {
 
   app.use(express.json({ limit: '10mb' }));
 
-  // Explicitly serve the OG image with correct content-type
+  // Explicitly serve the OG image with correct content-type and no-cache for debugging
   app.get("/og-image.jpg", (req, res) => {
     res.setHeader('Content-Type', 'image/jpeg');
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.sendFile(path.join(process.cwd(), "public", "og-image.jpg"));
   });
 

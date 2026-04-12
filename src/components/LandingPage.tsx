@@ -5,10 +5,13 @@ interface LandingPageProps {
   onStart: () => void;
   onAbout: () => void;
   onPrivacy: () => void;
+  onTerms: () => void;
+  onContact: () => void;
+  onBlog: () => void;
   logoSvg?: string;
 }
 
-export default function LandingPage({ onStart, onAbout, onPrivacy, logoSvg }: LandingPageProps) {
+export default function LandingPage({ onStart, onAbout, onPrivacy, onTerms, onContact, onBlog, logoSvg }: LandingPageProps) {
   return (
     <div className="bg-white no-print">
       {/* Navigation */}
@@ -28,6 +31,12 @@ export default function LandingPage({ onStart, onAbout, onPrivacy, logoSvg }: La
             )}
           </div>
           <div className="flex items-center gap-6">
+            <button 
+              onClick={onBlog}
+              className="hidden md:block text-sm font-medium text-slate-500 hover:text-indigo-600 transition-colors"
+            >
+              Blog
+            </button>
             <button 
               onClick={onAbout}
               className="text-sm font-medium text-slate-500 hover:text-indigo-600 transition-colors"
@@ -342,16 +351,34 @@ export default function LandingPage({ onStart, onAbout, onPrivacy, logoSvg }: La
           </div>
           <div className="flex items-center gap-8">
             <button 
+              onClick={onBlog}
+              className="text-sm font-medium text-slate-500 hover:text-indigo-600 transition-colors"
+            >
+              Blog
+            </button>
+            <button 
               onClick={onAbout}
               className="text-sm font-medium text-slate-500 hover:text-indigo-600 transition-colors"
             >
               About Us
             </button>
             <button 
+              onClick={onContact}
+              className="text-sm font-medium text-slate-500 hover:text-indigo-600 transition-colors"
+            >
+              Contact
+            </button>
+            <button 
               onClick={onPrivacy}
               className="text-sm font-medium text-slate-500 hover:text-indigo-600 transition-colors"
             >
               Privacy Policy
+            </button>
+            <button 
+              onClick={onTerms}
+              className="text-sm font-medium text-slate-500 hover:text-indigo-600 transition-colors"
+            >
+              Terms
             </button>
           </div>
         </div>

@@ -20,8 +20,50 @@
   </url>
   <url>
     <loc>https://www.simplereceiptgenerator.com/privacy</loc>
-    <lastmod>2026-04-05</lastmod>
+    <lastmod>2026-04-12</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://www.simplereceiptgenerator.com/terms</loc>
+    <lastmod>2026-04-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://www.simplereceiptgenerator.com/contact</loc>
+    <lastmod>2026-04-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://www.simplereceiptgenerator.com/blog</loc>
+    <lastmod>2026-04-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.simplereceiptgenerator.com/blog/how-to-invoice-as-a-freelancer</loc>
+    <lastmod>2026-04-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.simplereceiptgenerator.com/blog/essential-elements-of-a-professional-receipt</loc>
+    <lastmod>2026-04-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.simplereceiptgenerator.com/blog/tax-deductions-for-small-business-owners</loc>
+    <lastmod>2026-04-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.simplereceiptgenerator.com/blog/why-digital-invoicing-is-better-than-paper</loc>
+    <lastmod>2026-04-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
 </urlset>

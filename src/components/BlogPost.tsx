@@ -120,6 +120,58 @@ const POST_CONTENT: Record<string, { title: string; date: string; author: string
         </p>
       </div>
     )
+  },
+  'international-invoicing-currency-guide': {
+    title: 'International Invoicing: A Guide to Currencies and Exchange Rates',
+    date: 'April 12, 2026',
+    author: 'GomGom Team',
+    category: 'Global Business',
+    image: 'https://picsum.photos/seed/currency/1200/600',
+    content: (
+      <div className="prose prose-slate max-w-none">
+        <p className="lead text-xl text-slate-600 mb-8">
+          Billing clients across borders introduces complexities like currency conversion, exchange rate fluctuations, and international banking fees. Here is how to handle them professionally.
+        </p>
+        <h2 className="text-2xl font-bold text-slate-900 mt-10 mb-4">1. Choose a Base Currency</h2>
+        <p className="text-slate-600 mb-6">
+          Decide whether you want to be paid in your local currency or the client's local currency. If you choose your local currency, the client bears the exchange rate risk. If you choose theirs, you do.
+        </p>
+        <h2 className="text-2xl font-bold text-slate-900 mt-10 mb-4">2. Use Real-Time Exchange Rates</h2>
+        <p className="text-slate-600 mb-6">
+          When invoicing in a foreign currency, use the mid-market exchange rate at the time of invoicing. You can also add a small percentage (1-2%) to cover potential fluctuations before the payment arrives.
+        </p>
+        <h2 className="text-2xl font-bold text-slate-900 mt-10 mb-4">3. Clarify Who Pays the Fees</h2>
+        <p className="text-slate-600 mb-6">
+          International wire transfers often incur fees from both the sending and receiving banks. Explicitly state in your contract or on the invoice that the client is responsible for all transaction fees.
+        </p>
+      </div>
+    )
+  },
+  'understanding-payment-terms-net-30': {
+    title: 'Understanding Payment Terms: Net 30 vs. Due on Receipt',
+    date: 'April 14, 2026',
+    author: 'GomGom Team',
+    category: 'Finance',
+    image: 'https://picsum.photos/seed/payment/1200/600',
+    content: (
+      <div className="prose prose-slate max-w-none">
+        <p className="lead text-xl text-slate-600 mb-8">
+          Your payment terms dictate when you get paid and how you manage your business's cash flow. Choosing the right terms is a balance between being client-friendly and protecting your own finances.
+        </p>
+        <h2 className="text-2xl font-bold text-slate-900 mt-10 mb-4">1. Due on Receipt</h2>
+        <p className="text-slate-600 mb-6">
+          This is the most aggressive term, requiring the client to pay as soon as they receive the invoice. It's great for small projects or new clients where trust hasn't been established yet.
+        </p>
+        <h2 className="text-2xl font-bold text-slate-900 mt-10 mb-4">2. Net 15 / Net 30</h2>
+        <p className="text-slate-600 mb-6">
+          "Net 30" means the payment is due 30 days after the invoice date. This is standard for larger corporations but can be difficult for freelancers who need more immediate cash flow.
+        </p>
+        <h2 className="text-2xl font-bold text-slate-900 mt-10 mb-4">3. Milestone Payments</h2>
+        <p className="text-slate-600 mb-6">
+          For long-term projects, consider breaking the total cost into milestones (e.g., 30% upfront, 40% at midpoint, 30% on completion). This ensures you are paid for the work you've already done.
+        </p>
+      </div>
+    )
   }
 };
 

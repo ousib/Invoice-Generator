@@ -61,6 +61,15 @@ export const BLOG_POSTS = [
     author: 'GomGom Team',
     category: 'Finance',
     image: 'https://picsum.photos/seed/payment/800/450'
+  },
+  {
+    slug: 'psychology-of-invoicing-custom-templates',
+    title: 'The Psychology of Invoicing: How Custom Templates Get You Paid Faster',
+    excerpt: 'Can a well-designed invoice really speed up your payments? Discover the psychological triggers that encourage clients to pay promptly and how custom templates build professional trust.',
+    date: 'April 15, 2026',
+    author: 'GomGom Team',
+    category: 'Business Strategy',
+    image: 'https://picsum.photos/seed/psychology/800/450'
   }
 ];
 

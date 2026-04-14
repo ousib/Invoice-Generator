@@ -44,4 +44,5 @@ export interface InvoiceData {
   taxRate: number;
   discount: number;
   notes: string;
+  templateId?: 'modern' | 'classic' | 'minimalist';
 }

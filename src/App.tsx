@@ -58,6 +58,7 @@ const INITIAL_DATA: InvoiceData = {
   taxRate: 0,
   discount: 0,
   notes: '',
+  templateId: 'modern',
 };
 
 const STORAGE_KEY = 'simple_receipt_generator_draft';
@@ -737,6 +738,35 @@ export default function App() {
 
             <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
         <section className="space-y-8 no-print">
+          {/* Template Selection */}
+          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+            <div className="flex items-center gap-2 text-slate-900 font-bold text-lg">
+              <LayoutTemplate className="w-5 h-5 text-indigo-600" />
+              <h2>Choose Template</h2>
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+              {[
+                { id: 'modern', name: 'Modern', icon: '✨' },
+                { id: 'classic', name: 'Classic', icon: '🏛️' },
+                { id: 'minimalist', name: 'Minimal', icon: '🌑' }
+              ].map((tmpl) => (
+                <button
+                  key={tmpl.id}
+                  onClick={() => setData(prev => ({ ...prev, templateId: tmpl.id as any }))}
+                  className={cn(
+                    "flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all",
+                    data.templateId === tmpl.id 
+                      ? "border-indigo-600 bg-indigo-50 text-indigo-600" 
+                      : "border-slate-100 hover:border-slate-200 text-slate-500"
+                  )}
+                >
+                  <span className="text-2xl">{tmpl.icon}</span>
+                  <span className="text-xs font-bold uppercase tracking-wider">{tmpl.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Document Type & Basic Info */}
           <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-8">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
@@ -1140,123 +1170,312 @@ export default function App() {
             <div 
               ref={invoiceRef}
               id="invoice-preview"
-              className="bg-white w-full min-h-[11in] shadow-2xl p-8 sm:p-16 flex flex-col print:shadow-none print:p-[20mm] print:w-[8.5in] print:h-[11in] mx-auto"
+              className={cn(
+                "bg-white w-full min-h-[11in] shadow-2xl p-8 sm:p-16 flex flex-col print:shadow-none print:p-[20mm] print:w-[8.5in] print:h-[11in] mx-auto transition-all duration-300",
+                data.templateId === 'classic' && "font-serif",
+                data.templateId === 'minimalist' && "p-12 sm:p-20"
+              )}
               style={{ fontSize: '13px' }}
             >
-              {/* Invoice Header */}
-              <div className="flex justify-between items-start mb-16">
-                <div>
-                  {data.businessLogo ? (
-                    <img src={data.businessLogo} alt="Logo" className="h-20 w-auto mb-6 object-contain" />
-                  ) : assets.logoSvg ? (
-                    <div 
-                      className="h-20 w-auto mb-6 flex items-center"
-                      dangerouslySetInnerHTML={{ __html: assets.logoSvg }} 
-                    />
-                  ) : (
-                    <div className="w-14 h-14 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-2xl mb-6 shadow-lg shadow-indigo-200">S</div>
-                  )}
-                  <h2 className="text-4xl font-black text-slate-900 uppercase tracking-tighter">{data.type}</h2>
-                </div>
-                <div className="text-right space-y-2">
-                  <div className="inline-block px-3 py-1 bg-slate-100 rounded-md mb-2">
-                    <p className="font-bold text-slate-900 text-sm">#{data.invoiceNumber}</p>
-                  </div>
-                  <div className="space-y-1 text-sm">
-                    <p className="text-slate-500 flex justify-end gap-2">
-                      <span className="font-medium text-slate-400 uppercase text-[10px] tracking-wider">Date:</span>
-                      {data.date}
-                    </p>
-                    {data.type === 'invoice' && (
-                      <p className="text-slate-500 flex justify-end gap-2">
-                        <span className="font-medium text-slate-400 uppercase text-[10px] tracking-wider">Due:</span>
-                        {data.dueDate}
-                      </p>
+              {data.templateId === 'classic' ? (
+                /* Classic Template */
+                <div className="flex flex-col h-full">
+                  <div className="text-center mb-12 border-b-4 border-slate-900 pb-8">
+                    {data.businessLogo ? (
+                      <img src={data.businessLogo} alt="Logo" className="h-24 w-auto mx-auto mb-4 object-contain" />
+                    ) : (
+                      <div className="w-16 h-16 bg-slate-900 rounded-full flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4">S</div>
                     )}
+                    <h1 className="text-5xl font-serif font-bold text-slate-900 uppercase tracking-widest">{data.type}</h1>
                   </div>
-                </div>
-              </div>
 
-              {/* Addresses */}
-              <div className="grid grid-cols-2 gap-16 mb-16">
-                <div className="space-y-3">
-                  <p className="text-[11px] font-bold text-indigo-600 uppercase tracking-[0.2em] border-b border-indigo-100 pb-1 inline-block">From</p>
-                  <div className="pl-4">
-                    <p className="font-bold text-slate-900 text-base mb-1">{data.businessName || 'Your Business Name'}</p>
-                    <div className="text-slate-500 leading-relaxed whitespace-pre-line text-sm">
-                      {data.businessAddress}
-                      {data.businessEmail && `\n${data.businessEmail}`}
-                      {data.businessPhone && `\n${data.businessPhone}`}
+                  <div className="grid grid-cols-2 gap-12 mb-12">
+                    <div className="space-y-4">
+                      <h3 className="font-bold text-slate-900 border-b border-slate-200 pb-1">FROM:</h3>
+                      <div className="text-slate-700">
+                        <p className="font-bold text-lg">{data.businessName || 'Your Business Name'}</p>
+                        <p className="whitespace-pre-line">{data.businessAddress}</p>
+                        <p>{data.businessEmail}</p>
+                        <p>{data.businessPhone}</p>
+                      </div>
+                    </div>
+                    <div className="space-y-4 text-right">
+                      <div className="space-y-1">
+                        <p className="text-slate-500 font-bold uppercase text-xs">Number:</p>
+                        <p className="text-xl font-bold text-slate-900">#{data.invoiceNumber}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-slate-500 font-bold uppercase text-xs">Date:</p>
+                        <p className="text-slate-900">{data.date}</p>
+                      </div>
+                      {data.type === 'invoice' && (
+                        <div className="space-y-1">
+                          <p className="text-slate-500 font-bold uppercase text-xs">Due Date:</p>
+                          <p className="text-slate-900">{data.dueDate}</p>
+                        </div>
+                      )}
                     </div>
                   </div>
-                </div>
-                <div className="space-y-3">
-                  <p className="text-[11px] font-bold text-indigo-600 uppercase tracking-[0.2em] border-b border-indigo-100 pb-1 inline-block">Bill To</p>
-                  <div className="pl-4">
-                    <p className="font-bold text-slate-900 text-base mb-1">{data.clientName || 'Client Name'}</p>
-                    <div className="text-slate-500 leading-relaxed whitespace-pre-line text-sm">
-                      {data.clientAddress}
-                      {data.clientEmail && `\n${data.clientEmail}`}
-                    </div>
-                  </div>
-                </div>
-              </div>
 
-              {/* Table */}
-              <div className="flex-1">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b-2 border-slate-900">
-                      <th className="text-left pb-4 font-bold text-slate-900 uppercase tracking-widest text-[11px]">Description</th>
-                      <th className="text-right pb-4 font-bold text-slate-900 uppercase tracking-widest text-[11px] w-20">Qty</th>
-                      <th className="text-right pb-4 font-bold text-slate-900 uppercase tracking-widest text-[11px] w-28">Price</th>
-                      <th className="text-right pb-4 font-bold text-slate-900 uppercase tracking-widest text-[11px] w-28">Total</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {data.items.map((item) => (
-                      <tr key={item.id} className="group">
-                        <td className="py-5 text-slate-700 font-medium">{item.description || 'Item Description'}</td>
-                        <td className="py-5 text-right text-slate-600">{item.quantity}</td>
-                        <td className="py-5 text-right text-slate-600">{currencySymbol}{item.price.toLocaleString()}</td>
-                        <td className="py-5 text-right font-bold text-slate-900">{currencySymbol}{(item.quantity * item.price).toLocaleString()}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                  <div className="mb-12">
+                    <h3 className="font-bold text-slate-900 border-b border-slate-200 pb-1 mb-4">BILL TO:</h3>
+                    <div className="text-slate-700">
+                      <p className="font-bold text-lg">{data.clientName || 'Client Name'}</p>
+                      <p className="whitespace-pre-line">{data.clientAddress}</p>
+                      <p>{data.clientEmail}</p>
+                    </div>
+                  </div>
 
-              {/* Footer Totals */}
-              <div className="mt-16 pt-8 border-t-2 border-slate-900 flex justify-between items-start">
-                <div className="max-w-[45%]">
-                  <p className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-3">Notes & Terms</p>
-                  <p className="text-slate-500 leading-relaxed whitespace-pre-line text-sm italic">
-                    {data.notes || 'Thank you for your business! Please make payment within the due date.'}
-                  </p>
-                </div>
-                <div className="w-64 space-y-3">
-                  <div className="flex justify-between text-slate-500 text-sm">
-                    <span className="font-medium">Subtotal</span>
-                    <span className="font-semibold">{currencySymbol}{subtotal.toLocaleString()}</span>
+                  <div className="flex-1">
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="bg-slate-900 text-white">
+                          <th className="text-left p-3 font-bold uppercase text-xs">Description</th>
+                          <th className="text-right p-3 font-bold uppercase text-xs w-20">Qty</th>
+                          <th className="text-right p-3 font-bold uppercase text-xs w-32">Price</th>
+                          <th className="text-right p-3 font-bold uppercase text-xs w-32">Total</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-200">
+                        {data.items.map((item) => (
+                          <tr key={item.id}>
+                            <td className="p-4 text-slate-800">{item.description || 'Item Description'}</td>
+                            <td className="p-4 text-right text-slate-700">{item.quantity}</td>
+                            <td className="p-4 text-right text-slate-700">{currencySymbol}{item.price.toLocaleString()}</td>
+                            <td className="p-4 text-right font-bold text-slate-900">{currencySymbol}{(item.quantity * item.price).toLocaleString()}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
-                  {data.taxRate > 0 && (
-                    <div className="flex justify-between text-slate-500 text-sm">
-                      <span className="font-medium">Tax ({data.taxRate}%)</span>
-                      <span className="font-semibold">{currencySymbol}{taxAmount.toLocaleString()}</span>
+
+                  <div className="mt-12 flex justify-between items-start pt-8 border-t-4 border-slate-900">
+                    <div className="max-w-[50%]">
+                      <h4 className="font-bold text-slate-900 uppercase text-xs mb-2">Terms & Conditions</h4>
+                      <p className="text-slate-600 text-sm italic">{data.notes || 'Thank you for your business!'}</p>
                     </div>
-                  )}
-                  {data.discount > 0 && (
-                    <div className="flex justify-between text-slate-500 text-sm">
-                      <span className="font-medium">Discount</span>
-                      <span className="font-semibold text-red-500">-{currencySymbol}{data.discount.toLocaleString()}</span>
+                    <div className="w-72 space-y-2">
+                      <div className="flex justify-between text-slate-600">
+                        <span>Subtotal:</span>
+                        <span>{currencySymbol}{subtotal.toLocaleString()}</span>
+                      </div>
+                      {data.taxRate > 0 && (
+                        <div className="flex justify-between text-slate-600">
+                          <span>Tax ({data.taxRate}%):</span>
+                          <span>{currencySymbol}{taxAmount.toLocaleString()}</span>
+                        </div>
+                      )}
+                      {data.discount > 0 && (
+                        <div className="flex justify-between text-red-600">
+                          <span>Discount:</span>
+                          <span>-{currencySymbol}{data.discount.toLocaleString()}</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between text-2xl font-bold text-slate-900 pt-4 border-t-2 border-slate-900">
+                        <span>TOTAL:</span>
+                        <span>{currencySymbol}{total.toLocaleString()}</span>
+                      </div>
                     </div>
-                  )}
-                  <div className="flex justify-between text-xl font-black text-slate-900 pt-4 border-t border-slate-200">
-                    <span className="uppercase tracking-tighter">Total</span>
-                    <span className="text-indigo-600">{currencySymbol}{total.toLocaleString()}</span>
                   </div>
                 </div>
-              </div>
+              ) : data.templateId === 'minimalist' ? (
+                /* Minimalist Template */
+                <div className="flex flex-col h-full font-sans tracking-tight">
+                  <div className="flex justify-between items-start mb-20">
+                    <div>
+                      {data.businessLogo ? (
+                        <img src={data.businessLogo} alt="Logo" className="h-12 w-auto mb-8 grayscale object-contain" />
+                      ) : (
+                        <div className="w-10 h-10 bg-slate-900 rounded-sm mb-8" />
+                      )}
+                      <div className="space-y-1 text-slate-400 text-xs uppercase tracking-widest font-medium">
+                        <p className="text-slate-900 font-bold">{data.businessName || 'Your Business'}</p>
+                        <p>{data.businessEmail}</p>
+                        <p>{data.businessPhone}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <h1 className="text-6xl font-light text-slate-200 uppercase mb-4">{data.type}</h1>
+                      <div className="space-y-1 text-sm text-slate-500">
+                        <p>No. {data.invoiceNumber}</p>
+                        <p>{data.date}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mb-20">
+                    <p className="text-slate-400 text-[10px] uppercase tracking-[0.3em] mb-4">Client</p>
+                    <div className="text-slate-900">
+                      <p className="text-2xl font-bold mb-1">{data.clientName || 'Client Name'}</p>
+                      <p className="text-slate-500 text-sm whitespace-pre-line">{data.clientAddress}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex-1">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-slate-100">
+                          <th className="text-left py-4 font-medium text-slate-400 text-[10px] uppercase tracking-widest">Description</th>
+                          <th className="text-right py-4 font-medium text-slate-400 text-[10px] uppercase tracking-widest w-20">Qty</th>
+                          <th className="text-right py-4 font-medium text-slate-400 text-[10px] uppercase tracking-widest w-32">Price</th>
+                          <th className="text-right py-4 font-medium text-slate-400 text-[10px] uppercase tracking-widest w-32">Total</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-50">
+                        {data.items.map((item) => (
+                          <tr key={item.id}>
+                            <td className="py-6 text-slate-900 font-medium">{item.description || 'Item Description'}</td>
+                            <td className="py-6 text-right text-slate-500">{item.quantity}</td>
+                            <td className="py-6 text-right text-slate-500">{currencySymbol}{item.price.toLocaleString()}</td>
+                            <td className="py-6 text-right font-bold text-slate-900">{currencySymbol}{(item.quantity * item.price).toLocaleString()}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="mt-20 flex justify-end">
+                    <div className="w-80 space-y-4">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-slate-400">Subtotal</span>
+                        <span className="text-slate-900 font-medium">{currencySymbol}{subtotal.toLocaleString()}</span>
+                      </div>
+                      {data.taxRate > 0 && (
+                        <div className="flex justify-between text-sm">
+                          <span className="text-slate-400">Tax ({data.taxRate}%)</span>
+                          <span className="text-slate-900 font-medium">{currencySymbol}{taxAmount.toLocaleString()}</span>
+                        </div>
+                      )}
+                      <div className="pt-4 border-t border-slate-900 flex justify-between items-baseline">
+                        <span className="text-slate-900 font-bold uppercase tracking-widest text-xs">Total Amount</span>
+                        <span className="text-4xl font-bold text-slate-900">{currencySymbol}{total.toLocaleString()}</span>
+                      </div>
+                      <div className="pt-12">
+                        <p className="text-[10px] text-slate-400 uppercase tracking-widest mb-2">Notes</p>
+                        <p className="text-xs text-slate-500 leading-relaxed">{data.notes || 'Payment is due within 30 days.'}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                /* Modern Template (Original) */
+                <>
+                  {/* Invoice Header */}
+                  <div className="flex justify-between items-start mb-16">
+                    <div>
+                      {data.businessLogo ? (
+                        <img src={data.businessLogo} alt="Logo" className="h-20 w-auto mb-6 object-contain" />
+                      ) : assets.logoSvg ? (
+                        <div 
+                          className="h-20 w-auto mb-6 flex items-center"
+                          dangerouslySetInnerHTML={{ __html: assets.logoSvg }} 
+                        />
+                      ) : (
+                        <div className="w-14 h-14 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-2xl mb-6 shadow-lg shadow-indigo-200">S</div>
+                      )}
+                      <h2 className="text-4xl font-black text-slate-900 uppercase tracking-tighter">{data.type}</h2>
+                    </div>
+                    <div className="text-right space-y-2">
+                      <div className="inline-block px-3 py-1 bg-slate-100 rounded-md mb-2">
+                        <p className="font-bold text-slate-900 text-sm">#{data.invoiceNumber}</p>
+                      </div>
+                      <div className="space-y-1 text-sm">
+                        <p className="text-slate-500 flex justify-end gap-2">
+                          <span className="font-medium text-slate-400 uppercase text-[10px] tracking-wider">Date:</span>
+                          {data.date}
+                        </p>
+                        {data.type === 'invoice' && (
+                          <p className="text-slate-500 flex justify-end gap-2">
+                            <span className="font-medium text-slate-400 uppercase text-[10px] tracking-wider">Due:</span>
+                            {data.dueDate}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Addresses */}
+                  <div className="grid grid-cols-2 gap-16 mb-16">
+                    <div className="space-y-3">
+                      <p className="text-[11px] font-bold text-indigo-600 uppercase tracking-[0.2em] border-b border-indigo-100 pb-1 inline-block">From</p>
+                      <div className="pl-4">
+                        <p className="font-bold text-slate-900 text-base mb-1">{data.businessName || 'Your Business Name'}</p>
+                        <div className="text-slate-500 leading-relaxed whitespace-pre-line text-sm">
+                          {data.businessAddress}
+                          {data.businessEmail && `\n${data.businessEmail}`}
+                          {data.businessPhone && `\n${data.businessPhone}`}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      <p className="text-[11px] font-bold text-indigo-600 uppercase tracking-[0.2em] border-b border-indigo-100 pb-1 inline-block">Bill To</p>
+                      <div className="pl-4">
+                        <p className="font-bold text-slate-900 text-base mb-1">{data.clientName || 'Client Name'}</p>
+                        <div className="text-slate-500 leading-relaxed whitespace-pre-line text-sm">
+                          {data.clientAddress}
+                          {data.clientEmail && `\n${data.clientEmail}`}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Table */}
+                  <div className="flex-1">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b-2 border-slate-900">
+                          <th className="text-left pb-4 font-bold text-slate-900 uppercase tracking-widest text-[11px]">Description</th>
+                          <th className="text-right pb-4 font-bold text-slate-900 uppercase tracking-widest text-[11px] w-20">Qty</th>
+                          <th className="text-right pb-4 font-bold text-slate-900 uppercase tracking-widest text-[11px] w-28">Price</th>
+                          <th className="text-right pb-4 font-bold text-slate-900 uppercase tracking-widest text-[11px] w-28">Total</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {data.items.map((item) => (
+                          <tr key={item.id} className="group">
+                            <td className="py-5 text-slate-700 font-medium">{item.description || 'Item Description'}</td>
+                            <td className="py-5 text-right text-slate-600">{item.quantity}</td>
+                            <td className="py-5 text-right text-slate-600">{currencySymbol}{item.price.toLocaleString()}</td>
+                            <td className="py-5 text-right font-bold text-slate-900">{currencySymbol}{(item.quantity * item.price).toLocaleString()}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Footer Totals */}
+                  <div className="mt-16 pt-8 border-t-2 border-slate-900 flex justify-between items-start">
+                    <div className="max-w-[45%]">
+                      <p className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-3">Notes & Terms</p>
+                      <p className="text-slate-500 leading-relaxed whitespace-pre-line text-sm italic">
+                        {data.notes || 'Thank you for your business! Please make payment within the due date.'}
+                      </p>
+                    </div>
+                    <div className="w-64 space-y-3">
+                      <div className="flex justify-between text-slate-500 text-sm">
+                        <span className="font-medium">Subtotal</span>
+                        <span className="font-semibold">{currencySymbol}{subtotal.toLocaleString()}</span>
+                      </div>
+                      {data.taxRate > 0 && (
+                        <div className="flex justify-between text-slate-500 text-sm">
+                          <span className="font-medium">Tax ({data.taxRate}%)</span>
+                          <span className="font-semibold">{currencySymbol}{taxAmount.toLocaleString()}</span>
+                        </div>
+                      )}
+                      {data.discount > 0 && (
+                        <div className="flex justify-between text-slate-500 text-sm">
+                          <span className="font-medium">Discount</span>
+                          <span className="font-semibold text-red-500">-{currencySymbol}{data.discount.toLocaleString()}</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between text-xl font-black text-slate-900 pt-4 border-t border-slate-200">
+                        <span className="uppercase tracking-tighter">Total</span>
+                        <span className="text-indigo-600">{currencySymbol}{total.toLocaleString()}</span>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 

@@ -483,21 +483,24 @@ export default function App() {
       const element = invoiceRef.current;
       
       // Use html-to-image for better reliability with modern CSS like oklch
+      // We force a fixed width for the capture to ensure it fits A4 correctly
+      const captureWidth = 850; // Slightly more than 8.5in to ensure high quality
+      
       const canvas = await toCanvas(element, {
         quality: 1,
-        pixelRatio: 2, // 2 is usually enough and faster
+        pixelRatio: 3, // Higher quality for professional look
         backgroundColor: '#ffffff',
-        width: 800,
+        width: captureWidth,
         style: {
           boxShadow: 'none',
           borderRadius: '0',
           transform: 'none',
           margin: '0',
-          padding: '60px',
+          padding: '40px', // Standardized padding for PDF
           minHeight: '0',
           maxHeight: 'none',
           height: 'auto',
-          width: '800px',
+          width: `${captureWidth}px`,
           display: 'flex',
           flexDirection: 'column'
         }
@@ -518,7 +521,7 @@ export default function App() {
       
       // If the invoice is just slightly longer than one page, scale it down to fit
       // This avoids awkward splits for minor overflows
-      if (pdfHeight > pageHeight && pdfHeight < pageHeight * 1.1) {
+      if (pdfHeight > pageHeight && pdfHeight < pageHeight * 1.15) {
         const scaleFactor = pageHeight / pdfHeight;
         pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight * scaleFactor, undefined, 'FAST');
       } else {
@@ -1254,24 +1257,24 @@ export default function App() {
                       <h4 className="font-bold text-slate-900 uppercase text-xs mb-2">Terms & Conditions</h4>
                       <p className="text-slate-600 text-sm italic">{data.notes || 'Thank you for your business!'}</p>
                     </div>
-                    <div className="w-72 space-y-2">
-                      <div className="flex justify-between text-slate-600">
+                    <div className="w-80 space-y-2">
+                      <div className="flex justify-between text-slate-600 gap-4">
                         <span>Subtotal:</span>
                         <span>{currencySymbol}{subtotal.toLocaleString()}</span>
                       </div>
                       {data.taxRate > 0 && (
-                        <div className="flex justify-between text-slate-600">
+                        <div className="flex justify-between text-slate-600 gap-4">
                           <span>Tax ({data.taxRate}%):</span>
                           <span>{currencySymbol}{taxAmount.toLocaleString()}</span>
                         </div>
                       )}
                       {data.discount > 0 && (
-                        <div className="flex justify-between text-red-600">
+                        <div className="flex justify-between text-red-600 gap-4">
                           <span>Discount:</span>
                           <span>-{currencySymbol}{data.discount.toLocaleString()}</span>
                         </div>
                       )}
-                      <div className="flex justify-between text-2xl font-bold text-slate-900 pt-4 border-t-2 border-slate-900">
+                      <div className="flex justify-between text-2xl font-bold text-slate-900 pt-4 border-t-2 border-slate-900 gap-4">
                         <span>TOTAL:</span>
                         <span>{currencySymbol}{total.toLocaleString()}</span>
                       </div>
@@ -1336,17 +1339,17 @@ export default function App() {
 
                   <div className="mt-20 flex justify-end">
                     <div className="w-80 space-y-4">
-                      <div className="flex justify-between text-sm">
+                      <div className="flex justify-between text-sm gap-4">
                         <span className="text-slate-400">Subtotal</span>
                         <span className="text-slate-900 font-medium">{currencySymbol}{subtotal.toLocaleString()}</span>
                       </div>
                       {data.taxRate > 0 && (
-                        <div className="flex justify-between text-sm">
+                        <div className="flex justify-between text-sm gap-4">
                           <span className="text-slate-400">Tax ({data.taxRate}%)</span>
                           <span className="text-slate-900 font-medium">{currencySymbol}{taxAmount.toLocaleString()}</span>
                         </div>
                       )}
-                      <div className="pt-4 border-t border-slate-900 flex justify-between items-baseline">
+                      <div className="pt-4 border-t border-slate-900 flex justify-between items-baseline gap-4">
                         <span className="text-slate-900 font-bold uppercase tracking-widest text-xs">Total Amount</span>
                         <span className="text-4xl font-bold text-slate-900">{currencySymbol}{total.toLocaleString()}</span>
                       </div>
@@ -1451,24 +1454,24 @@ export default function App() {
                         {data.notes || 'Thank you for your business! Please make payment within the due date.'}
                       </p>
                     </div>
-                    <div className="w-64 space-y-3">
-                      <div className="flex justify-between text-slate-500 text-sm">
+                    <div className="w-80 space-y-3">
+                      <div className="flex justify-between text-slate-500 text-sm gap-4">
                         <span className="font-medium">Subtotal</span>
                         <span className="font-semibold">{currencySymbol}{subtotal.toLocaleString()}</span>
                       </div>
                       {data.taxRate > 0 && (
-                        <div className="flex justify-between text-slate-500 text-sm">
+                        <div className="flex justify-between text-slate-500 text-sm gap-4">
                           <span className="font-medium">Tax ({data.taxRate}%)</span>
                           <span className="font-semibold">{currencySymbol}{taxAmount.toLocaleString()}</span>
                         </div>
                       )}
                       {data.discount > 0 && (
-                        <div className="flex justify-between text-slate-500 text-sm">
+                        <div className="flex justify-between text-slate-500 text-sm gap-4">
                           <span className="font-medium">Discount</span>
                           <span className="font-semibold text-red-500">-{currencySymbol}{data.discount.toLocaleString()}</span>
                         </div>
                       )}
-                      <div className="flex justify-between text-xl font-black text-slate-900 pt-4 border-t border-slate-200">
+                      <div className="flex justify-between text-xl font-black text-slate-900 pt-4 border-t border-slate-200 gap-4">
                         <span className="uppercase tracking-tighter">Total</span>
                         <span className="text-indigo-600">{currencySymbol}{total.toLocaleString()}</span>
                       </div>

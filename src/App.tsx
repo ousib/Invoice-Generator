@@ -483,26 +483,29 @@ export default function App() {
       const element = invoiceRef.current;
       
       // Use html-to-image for better reliability with modern CSS like oklch
-      // We force a fixed width for the capture to ensure it fits A4 correctly
-      const captureWidth = 850; // Slightly more than 8.5in to ensure high quality
+      // We increase the capture width and remove margins to expand the content to the fill the page
+      const captureWidth = 1000; 
       
       const canvas = await toCanvas(element, {
         quality: 1,
-        pixelRatio: 3, // Higher quality for professional look
+        pixelRatio: 3, 
         backgroundColor: '#ffffff',
         width: captureWidth,
+        fontEmbedCSS: '', // Fix for "Cannot access rules" error with Google Fonts
         style: {
           boxShadow: 'none',
           borderRadius: '0',
           transform: 'none',
           margin: '0',
-          padding: '40px', // Standardized padding for PDF
+          padding: '10px', // Minimal padding within the capture
           minHeight: '0',
           maxHeight: 'none',
           height: 'auto',
           width: `${captureWidth}px`,
           display: 'flex',
-          flexDirection: 'column'
+          flexDirection: 'column',
+          alignItems: 'center', 
+          justifyContent: 'flex-start'
         }
       });
       
@@ -514,28 +517,32 @@ export default function App() {
       });
       
       const imgProps = pdf.getImageProperties(imgData);
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-      
+      const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
       
+      // Zero margins for maximum width expansion
+      const margin = 0;
+      const pdfWidth = pageWidth;
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      const x = 0;
+      let y = 0;
+      
       // If the invoice is just slightly longer than one page, scale it down to fit
-      // This avoids awkward splits for minor overflows
       if (pdfHeight > pageHeight && pdfHeight < pageHeight * 1.15) {
         const scaleFactor = pageHeight / pdfHeight;
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight * scaleFactor, undefined, 'FAST');
+        pdf.addImage(imgData, 'PNG', x, 0, pdfWidth, pdfHeight * scaleFactor, undefined, 'FAST');
       } else {
         // Standard multi-page support
         let heightLeft = pdfHeight;
         let position = 0;
 
-        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight, undefined, 'FAST');
+        pdf.addImage(imgData, 'PNG', x, position, pdfWidth, pdfHeight, undefined, 'FAST');
         heightLeft -= pageHeight;
 
         while (heightLeft > 0) {
           position = heightLeft - pdfHeight;
           pdf.addPage();
-          pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight, undefined, 'FAST');
+          pdf.addImage(imgData, 'PNG', x, position, pdfWidth, pdfHeight, undefined, 'FAST');
           heightLeft -= pageHeight;
         }
       }

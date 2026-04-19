@@ -483,8 +483,9 @@ export default function App() {
       const element = invoiceRef.current;
       
       // Use html-to-image for better reliability with modern CSS like oklch
-      // We increase the capture width and remove margins to expand the content to the fill the page
-      const captureWidth = 1000; 
+      // We set a consistent capture width and force the element style to match exactly
+      // 900px is a good balance for A4 proportions when using high pixelRatio
+      const captureWidth = 900; 
       
       const canvas = await toCanvas(element, {
         quality: 1,
@@ -497,15 +498,13 @@ export default function App() {
           borderRadius: '0',
           transform: 'none',
           margin: '0',
-          padding: '10px', // Minimal padding within the capture
+          padding: '0', // Full width, no padding
           minHeight: '0',
           maxHeight: 'none',
           height: 'auto',
-          width: `${captureWidth}px`,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center', 
-          justifyContent: 'flex-start'
+          width: `${captureWidth}px`, // Explicitly force the element to fill the capture width
+          display: 'block', // Use block to avoid flex behavior shrinking the internal content
+          boxSizing: 'border-box'
         }
       });
       
@@ -1181,116 +1180,133 @@ export default function App() {
               ref={invoiceRef}
               id="invoice-preview"
               className={cn(
-                "bg-white w-full min-h-[11in] shadow-2xl p-8 sm:p-16 flex flex-col print:shadow-none print:p-[20mm] print:w-[8.5in] print:h-[11in] mx-auto transition-all duration-300",
+                // Full width: remove horizontal padding and shadow, let content use full space
+                "bg-white w-full shadow-2xl flex flex-col print:shadow-none print:p-0 mx-auto transition-all duration-300",
                 data.templateId === 'classic' && "font-serif",
-                data.templateId === 'minimalist' && "p-12 sm:p-20"
+                data.templateId === 'minimalist' && "" // Minimalist now uses internal padding
               )}
               style={{ fontSize: '13px' }}
             >
               {data.templateId === 'classic' ? (
-                /* Classic Template */
-                <div className="flex flex-col h-full">
-                  <div className="text-center mb-12 border-b-4 border-slate-900 pb-8">
-                    {data.businessLogo ? (
-                      <img src={data.businessLogo} alt="Logo" className="h-24 w-auto mx-auto mb-4 object-contain" />
-                    ) : (
-                      <div className="w-16 h-16 bg-slate-900 rounded-full flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4">S</div>
-                    )}
-                    <h1 className="text-5xl font-serif font-bold text-slate-900 uppercase tracking-widest">{data.type}</h1>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-12 mb-12">
-                    <div className="space-y-4">
-                      <h3 className="font-bold text-slate-900 border-b border-slate-200 pb-1">FROM:</h3>
-                      <div className="text-slate-700">
-                        <p className="font-bold text-lg">{data.businessName || 'Your Business Name'}</p>
-                        <p className="whitespace-pre-line">{data.businessAddress}</p>
-                        <p>{data.businessEmail}</p>
-                        <p>{data.businessPhone}</p>
-                      </div>
-                    </div>
-                    <div className="space-y-4 text-right">
-                      <div className="space-y-1">
-                        <p className="text-slate-500 font-bold uppercase text-xs">Number:</p>
-                        <p className="text-xl font-bold text-slate-900">#{data.invoiceNumber}</p>
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-slate-500 font-bold uppercase text-xs">Date:</p>
-                        <p className="text-slate-900">{data.date}</p>
-                      </div>
-                      {data.type === 'invoice' && (
-                        <div className="space-y-1">
-                          <p className="text-slate-500 font-bold uppercase text-xs">Due Date:</p>
-                          <p className="text-slate-900">{data.dueDate}</p>
-                        </div>
+                /* Classic Template - Adjusted for full width */
+                
+                <div className="flex flex-col h-full" style={{ padding: '2rem', maxWidth: '100%' }}>
+                  {/* Invoice Header - Changed to space-between with balanced spacing */}
+                  <div className="flex items-start justify-between w-full">
+                    <div>
+                      {data.businessLogo ? (
+                        <img src={data.businessLogo} alt="Logo" className="h-20 w-auto mb-6 object-contain" />
+                      ) : assets.logoSvg ? (
+                        <div 
+                          className="h-20 w-auto mb-6 flex items-center"
+                          dangerouslySetInnerHTML={{ __html: assets.logoSvg }} 
+                        />
+                      ) : (
+                        <div className="w-14 h-14 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-2xl mb-6 shadow-lg shadow-indigo-200">S</div>
                       )}
+                      <h2 className="text-4xl font-black text-slate-900 uppercase tracking-tighter">{data.type}</h2>
+                    </div>
+                    <div className="text-right">
+                      <div className="inline-block px-3 py-1 bg-slate-100 rounded-md mb-2">
+                        <p className="font-bold text-slate-900 text-sm">#{data.invoiceNumber}</p>
+                      </div>
+                      <div className="space-y-1 text-sm">
+                        <p className="text-slate-500">
+                          <span className="font-medium text-slate-400 uppercase text-[10px] tracking-wider">Date:</span> {data.date}
+                        </p>
+                        {data.type === 'invoice' && (
+                          <p className="text-slate-500">
+                            <span className="font-medium text-slate-400 uppercase text-[10px] tracking-wider">Due:</span> {data.dueDate}
+                          </p>
+                        )}
+                      </div>
                     </div>
                   </div>
 
-                  <div className="mb-12">
-                    <h3 className="font-bold text-slate-900 border-b border-slate-200 pb-1 mb-4">BILL TO:</h3>
-                    <div className="text-slate-700">
-                      <p className="font-bold text-lg">{data.clientName || 'Client Name'}</p>
-                      <p className="whitespace-pre-line">{data.clientAddress}</p>
-                      <p>{data.clientEmail}</p>
+                  {/* Addresses - Changed to grid with equal columns */}
+                  <div className="grid grid-cols-2 gap-12 mb-16 w-full">
+                    <div className="space-y-3">
+                      <p className="text-[11px] font-bold text-indigo-600 uppercase tracking-[0.2em] border-b border-indigo-100 pb-1 inline-block">From</p>
+                      <div className="pl-4">
+                        <p className="font-bold text-slate-900 text-base mb-1">{data.businessName || 'Your Business Name'}</p>
+                        <div className="text-slate-500 leading-relaxed whitespace-pre-line text-sm">
+                          {data.businessAddress}
+                          {data.businessEmail && `\n${data.businessEmail}`}
+                          {data.businessPhone && `\n${data.businessPhone}`}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      <p className="text-[11px] font-bold text-indigo-600 uppercase tracking-[0.2em] border-b border-indigo-100 pb-1 inline-block">Bill To</p>
+                      <div className="pl-4">
+                        <p className="font-bold text-slate-900 text-base mb-1">{data.clientName || 'Client Name'}</p>
+                        <div className="text-slate-500 leading-relaxed whitespace-pre-line text-sm">
+                          {data.clientAddress}
+                          {data.clientEmail && `\n${data.clientEmail}`}
+                        </div>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="flex-1">
-                    <table className="w-full border-collapse">
+                  {/* Table - Full width with proper cell padding */}
+                  <div className="flex-1 w-full overflow-x-auto">
+                    <table className="w-full min-w-[500px]">
                       <thead>
-                        <tr className="bg-slate-900 text-white">
-                          <th className="text-left p-3 font-bold uppercase text-xs">Description</th>
-                          <th className="text-right p-3 font-bold uppercase text-xs w-20">Qty</th>
-                          <th className="text-right p-3 font-bold uppercase text-xs w-32">Price</th>
-                          <th className="text-right p-3 font-bold uppercase text-xs w-32">Total</th>
+                        <tr className="border-b-2 border-slate-900">
+                          <th className="text-left pb-4 font-bold text-slate-900 uppercase tracking-widest text-[11px]">Description</th>
+                          <th className="text-right pb-4 font-bold text-slate-900 uppercase tracking-widest text-[11px] w-20">Qty</th>
+                          <th className="text-right pb-4 font-bold text-slate-900 uppercase tracking-widest text-[11px] w-28">Price</th>
+                          <th className="text-right pb-4 font-bold text-slate-900 uppercase tracking-widest text-[11px] w-28">Total</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-200">
+                      <tbody className="divide-y divide-slate-100">
                         {data.items.map((item) => (
-                          <tr key={item.id}>
-                            <td className="p-4 text-slate-800">{item.description || 'Item Description'}</td>
-                            <td className="p-4 text-right text-slate-700">{item.quantity}</td>
-                            <td className="p-4 text-right text-slate-700">{currencySymbol}{item.price.toLocaleString()}</td>
-                            <td className="p-4 text-right font-bold text-slate-900">{currencySymbol}{(item.quantity * item.price).toLocaleString()}</td>
+                          <tr key={item.id} className="group">
+                            <td className="py-5 text-slate-700 font-medium">{item.description || 'Item Description'}</td>
+                            <td className="py-5 text-right text-slate-600">{item.quantity}</td>
+                            <td className="py-5 text-right text-slate-600">{currencySymbol}{item.price.toLocaleString()}</td>
+                            <td className="py-5 text-right font-bold text-slate-900">{currencySymbol}{(item.quantity * item.price).toLocaleString()}</td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
                   </div>
 
-                  <div className="mt-12 flex justify-between items-start pt-8 border-t-4 border-slate-900">
-                    <div className="max-w-[50%]">
-                      <h4 className="font-bold text-slate-900 uppercase text-xs mb-2">Terms & Conditions</h4>
-                      <p className="text-slate-600 text-sm italic">{data.notes || 'Thank you for your business!'}</p>
+                  {/* Footer Totals - Changed to flex with proper spacing */}
+                  <div className="mt-16 pt-8 border-t-2 border-slate-900 flex flex-wrap justify-between items-start gap-8 w-full">
+                    <div className="flex-1 min-w-[200px]">
+                      <p className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-3">Notes & Terms</p>
+                      <p className="text-slate-500 leading-relaxed whitespace-pre-line text-sm italic">
+                        {data.notes || 'Thank you for your business! Please make payment within the due date.'}
+                      </p>
                     </div>
-                    <div className="w-80 space-y-2">
-                      <div className="flex justify-between text-slate-600 gap-4">
-                        <span>Subtotal:</span>
-                        <span>{currencySymbol}{subtotal.toLocaleString()}</span>
+                    <div className="w-80 space-y-3">
+                      <div className="flex justify-between text-slate-500 text-sm">
+                        <span className="font-medium">Subtotal</span>
+                        <span className="font-semibold">{currencySymbol}{subtotal.toLocaleString()}</span>
                       </div>
                       {data.taxRate > 0 && (
-                        <div className="flex justify-between text-slate-600 gap-4">
-                          <span>Tax ({data.taxRate}%):</span>
-                          <span>{currencySymbol}{taxAmount.toLocaleString()}</span>
+                        <div className="flex justify-between text-slate-500 text-sm">
+                          <span className="font-medium">Tax ({data.taxRate}%)</span>
+                          <span className="font-semibold">{currencySymbol}{taxAmount.toLocaleString()}</span>
                         </div>
                       )}
                       {data.discount > 0 && (
-                        <div className="flex justify-between text-red-600 gap-4">
-                          <span>Discount:</span>
-                          <span>-{currencySymbol}{data.discount.toLocaleString()}</span>
+                        <div className="flex justify-between text-slate-500 text-sm">
+                          <span className="font-medium">Discount</span>
+                          <span className="font-semibold text-red-500">-{currencySymbol}{data.discount.toLocaleString()}</span>
                         </div>
                       )}
-                      <div className="flex justify-between text-2xl font-bold text-slate-900 pt-4 border-t-2 border-slate-900 gap-4">
-                        <span>TOTAL:</span>
-                        <span>{currencySymbol}{total.toLocaleString()}</span>
+                      <div className="flex justify-between text-xl font-black text-slate-900 pt-4 border-t border-slate-200">
+                        <span className="uppercase tracking-tighter">Total</span>
+                        <span className="text-indigo-600">{currencySymbol}{total.toLocaleString()}</span>
                       </div>
                     </div>
                   </div>
                 </div>
               ) : data.templateId === 'minimalist' ? (
-                /* Minimalist Template */
-                <div className="flex flex-col h-full font-sans tracking-tight">
+                /* Minimalist Template - Adjusted for full width (internal padding) */
+                <div className="flex flex-col h-full p-8 sm:p-16 font-sans tracking-tight">
                   <div className="flex justify-between items-start mb-20">
                     <div>
                       {data.businessLogo ? (
@@ -1368,8 +1384,8 @@ export default function App() {
                   </div>
                 </div>
               ) : (
-                /* Modern Template (Original) */
-                <>
+                /* Modern Template (Original) - Adjusted for full width (internal padding) */
+                <div className="flex flex-col h-full" style={{ padding: '2rem' }}>
                   {/* Invoice Header */}
                   <div className="flex justify-between items-start mb-16">
                     <div>
@@ -1484,7 +1500,7 @@ export default function App() {
                       </div>
                     </div>
                   </div>
-                </>
+                </div>
               )}
             </div>
           </div>

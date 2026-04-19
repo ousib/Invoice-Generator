@@ -720,6 +720,7 @@ export default function App() {
                     </button>
                   )}
 
+                  {/* Hide download button for now
                   <button 
                     onClick={handleDownloadPDF}
                     disabled={isGenerating}
@@ -732,6 +733,7 @@ export default function App() {
                     )}
                     <span className="hidden sm:inline">Download PDF</span>
                   </button>
+                  */}
                 </div>
               </div>
             </header>

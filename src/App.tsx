@@ -485,7 +485,7 @@ export default function App() {
       // Use html-to-image for better reliability with modern CSS like oklch
       // We set a consistent capture width and force the element style to match exactly
       // 900px is a good balance for A4 proportions when using high pixelRatio
-      const captureWidth = 900; 
+      const captureWidth = 700; 
       
       const canvas = await toCanvas(element, {
         quality: 1,

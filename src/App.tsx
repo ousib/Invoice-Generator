@@ -114,7 +114,7 @@ export default function App() {
   // Dynamic Page Title for SEO
   useEffect(() => {
     const path = location.pathname;
-    let title = 'Free Online Invoice Generator | Simple Receipt Maker';
+    let title = 'Free Online Invoice Generators | Simple Receipt Maker';
     
     if (path === '/generate-invoice') {
       title = 'Generate Invoice & Receipt | Simple Receipt Generator';

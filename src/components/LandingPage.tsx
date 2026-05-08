@@ -147,6 +147,58 @@ export default function LandingPage({ onStart, onAbout, onPrivacy, onTerms, onCo
         </div>
       </section>
 
+      {/* Detailed Features / Content Section */}
+      <section className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div className="order-2 lg:order-1">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-600 rounded-full text-sm font-bold mb-6">
+                <CheckCircle2 className="w-4 h-4" />
+                Comprehensive Support
+              </div>
+              <h2 className="text-3xl font-black text-slate-900 mb-6 leading-tight">
+                Designed for the Modern <span className="text-indigo-600">Entrepreneur</span>
+              </h2>
+              <p className="text-lg text-slate-600 mb-8 leading-relaxed">
+                Whether you're a freelance graphic designer, a local handyman, or a growing consulting firm, our platform provides a robust set of features to handle your daily billing needs. We've optimized every part of the experience to ensure you spend less time on paperwork and more time doing what you love.
+              </p>
+              <ul className="space-y-4">
+                {[
+                  "Automatic tax calculations for any jurisdiction",
+                  "Support for 100+ global currencies including USD, EUR, GBP, and NGN",
+                  "Professional templates: Classic, Modern, and Minimalist",
+                  "One-click PDF generation with high-quality vector rendering",
+                  "Secure cloud sync to save your drafts and client history"
+                ].map((item, i) => (
+                  <li key={i} className="flex items-start gap-3 text-slate-700">
+                    <div className="mt-1 w-5 h-5 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
+                      <div className="w-2 h-2 bg-indigo-600 rounded-full" />
+                    </div>
+                    <span className="font-medium">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="order-1 lg:order-2 bg-slate-50 rounded-3xl p-10 border border-slate-200">
+              <h3 className="text-xl font-bold text-slate-900 mb-4">Why use a digital receipt maker?</h3>
+              <p className="text-slate-500 mb-6 italic">
+                "In today's digital economy, a professional invoice is more than just a payment request—it's a touchpoint for your brand. Using a digital generator ensures consistency, accuracy, and builds long-term trust with your clients."
+              </p>
+              <div className="space-y-4">
+                <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
+                  <h4 className="font-bold text-slate-900 mb-1">Instant Accountability</h4>
+                  <p className="text-sm text-slate-500">Provide clients with immediate proof of purchase, reducing disputes and improving customer satisfaction.</p>
+                </div>
+                <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
+                  <h4 className="font-bold text-slate-900 mb-1">Tax Readiness</h4>
+                  <p className="text-sm text-slate-500">Easily organize your income records for quarterly or annual tax filings without digging through paper stacks.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* FAQ Section */}
       <section className="py-24">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">

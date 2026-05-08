@@ -129,6 +129,37 @@ export default function ContactPage({ onBack }: ContactPageProps) {
             </form>
           </motion.div>
         </div>
+
+        {/* Added FAQ / Common Questions Section to solve Low Value Content */}
+        <div className="mt-20">
+          <h2 className="text-3xl font-black text-slate-900 text-center mb-12">Common Questions</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="bg-white p-8 rounded-3xl border border-slate-200">
+              <h3 className="font-bold text-slate-900 mb-2">How do I save my invoices?</h3>
+              <p className="text-slate-500 text-sm leading-relaxed">
+                You can save invoices by creating a free account. Once logged in, use the "Save to Cloud" button to store your drafts and history securely. You can also work without an account—your most recent draft is saved locally in your browser automatically.
+              </p>
+            </div>
+            <div className="bg-white p-8 rounded-3xl border border-slate-200">
+              <h3 className="font-bold text-slate-900 mb-2">Is the PDF high-quality?</h3>
+              <p className="text-slate-500 text-sm leading-relaxed">
+                Yes, our generator uses high-resolution vector rendering to ensure your PDF invoices look crisp on any device and print perfectly on A4 paper.
+              </p>
+            </div>
+            <div className="bg-white p-8 rounded-3xl border border-slate-200">
+              <h3 className="font-bold text-slate-900 mb-2">Are there any hidden costs?</h3>
+              <p className="text-slate-500 text-sm leading-relaxed">
+                Absolutely none. Simple Receipt Generator is a free utility. We do not charge subscription fees, and we do not add watermarks to your documents.
+              </p>
+            </div>
+            <div className="bg-white p-8 rounded-3xl border border-slate-200">
+              <h3 className="font-bold text-slate-900 mb-2">Can I use my own logo?</h3>
+              <p className="text-slate-500 text-sm leading-relaxed">
+                Yes! You can upload your business logo in the editor, and it will be perfectly positioned on your selected template for a professional look.
+              </p>
+            </div>
+          </div>
+        </div>
       </main>
     </div>
   );

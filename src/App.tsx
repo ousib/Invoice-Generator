@@ -1545,10 +1545,10 @@ export default function App() {
                 The world's simplest free online invoice generator. Helping small businesses and freelancers get paid faster since 2026.
               </p>
               <a 
-                href="mailto:gomgomtechnologies@gmail.com" 
+                href="mailto:simplereceiptgenerator@gmail.com" 
                 className="text-xs text-slate-400 hover:text-indigo-600 transition-colors"
               >
-                gomgomtechnologies@gmail.com
+                simplereceiptgenerator@gmail.com
               </a>
             </div>
             <div>
@@ -1563,9 +1563,9 @@ export default function App() {
               <h4 className="font-bold text-slate-900 mb-4">Support</h4>
               <ul className="space-y-2 text-sm text-slate-500">
                 <li><button onClick={() => navigate('/about')} className="hover:text-indigo-600">About Us</button></li>
-                <li><a href="#" className="hover:text-indigo-600">Help Center</a></li>
+                <li><button onClick={() => navigate('/contact')} className="hover:text-indigo-600">Contact Us</button></li>
                 <li><button onClick={() => navigate('/privacy')} className="hover:text-indigo-600">Privacy Policy</button></li>
-                <li><a href="#" className="hover:text-indigo-600">Terms of Service</a></li>
+                <li><button onClick={() => navigate('/terms')} className="hover:text-indigo-600">Terms of Service</button></li>
               </ul>
             </div>
           </div>

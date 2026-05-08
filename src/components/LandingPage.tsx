@@ -108,10 +108,10 @@ export default function LandingPage({ onStart, onAbout, onPrivacy, onTerms, onCo
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-slate-900 sm:text-4xl">
-              The Simple Invoice Maker for Small Business
+              Professional Invoicing for Modern Entrepreneurs
             </h2>
-            <p className="mt-4 text-lg text-slate-600">
-              Everything you need to get paid faster, without the complexity of accounting software.
+            <p className="mt-4 text-lg text-slate-600 max-w-3xl mx-auto">
+              Our free receipt maker online is designed to help small businesses, freelancers, and contractors streamline their billing process. Professional invoices help you get paid faster and maintain healthy client relationships.
             </p>
           </div>
 
@@ -120,27 +120,27 @@ export default function LandingPage({ onStart, onAbout, onPrivacy, onTerms, onCo
               <div className="w-12 h-12 bg-indigo-100 rounded-2xl flex items-center justify-center text-indigo-600 mb-6">
                 <Zap className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Lightning Fast</h3>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">Instant Generation</h3>
               <p className="text-slate-500 leading-relaxed">
-                Generate a professional receipt or invoice in under 60 seconds. Our intuitive editor is built for speed and efficiency.
+                Create a professional receipt or invoice in under 60 seconds. Our simple invoice maker eliminates the learning curve of complex accounting software, allowing you to focus on growing your business.
               </p>
             </div>
             <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
               <div className="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center text-green-600 mb-6">
                 <ShieldCheck className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Privacy First</h3>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">Enterprise-Grade Security</h3>
               <p className="text-slate-500 leading-relaxed">
-                Your data is secure. We use industry-standard encryption to protect your information, whether it's stored locally in your browser or saved securely in our cloud database.
+                Your privacy is our priority. We use secure cloud encryption and local storage options to ensure your sensitive business data stays private. No intrusive tracking, just a clean billing tool.
               </p>
             </div>
             <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
               <div className="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center text-purple-600 mb-6">
                 <Globe className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Global Ready</h3>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">Global Localization</h3>
               <p className="text-slate-500 leading-relaxed">
-                Whether you're in Lagos, Nairobi, London, or New York, our currency selector and tax support have you covered.
+                Support for 100+ currencies and custom tax rates makes our online invoice generator perfect for international trade. Whether you're a local shop or a global agency, we've got you covered.
               </p>
             </div>
           </div>
@@ -201,33 +201,39 @@ export default function LandingPage({ onStart, onAbout, onPrivacy, onTerms, onCo
 
       {/* FAQ Section */}
       <section className="py-24">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-slate-900 text-center mb-12">
-            Frequently Asked Questions
+            Frequently Asked Questions About Our Online Invoice Tool
           </h2>
           <div className="space-y-8">
-            <div>
-              <h3 className="text-lg font-bold text-slate-900 mb-2">Is this invoice generator really free?</h3>
+            <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+              <h3 className="text-lg font-bold text-slate-900 mb-2">Is this invoice generator really free to use?</h3>
               <p className="text-slate-600">
-                Yes, Simple Receipt Generator is 100% free to use. There are no subscription fees, no "pro" versions, and no watermarks on your downloaded PDFs.
+                Yes, Simple Receipt Generator is 100% free with no hidden charges. We believe that every small business deserves access to high-quality billing tools without a monthly subscription. You can download unlimited PDF invoices for free.
               </p>
             </div>
-            <div>
-              <h3 className="text-lg font-bold text-slate-900 mb-2">Do I need to create an account?</h3>
+            <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+              <h3 className="text-lg font-bold text-slate-900 mb-2">Do I need to sign up for an account?</h3>
               <p className="text-slate-600">
-                No account is required. We built this for speed. Just open the app, fill in your details, and download your invoice.
+                No registration or sign-up is required to generate invoices. We value your time—just open the tool, enter your professional details, and generate your document. If you wish to save your history for later, we offer secure cloud sync options.
               </p>
             </div>
-            <div>
-              <h3 className="text-lg font-bold text-slate-900 mb-2">Can I use this for receipts?</h3>
+            <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+              <h3 className="text-lg font-bold text-slate-900 mb-2">Can I create both receipts and invoices?</h3>
               <p className="text-slate-600">
-                Absolutely! You can toggle between "Invoice" and "Receipt" modes with a single click. The layout adjusts automatically to suit your needs.
+                Absolutely! Our platform is a versatile receipt maker online. You can easily toggle between invoice and receipt modes. The generated PDF will adjust its layout and terminology to match the document type you choose.
               </p>
             </div>
-            <div>
-              <h3 className="text-lg font-bold text-slate-900 mb-2">Is my data secure?</h3>
+            <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+              <h3 className="text-lg font-bold text-slate-900 mb-2">Is my business data and client info secure?</h3>
               <p className="text-slate-600">
-                Yes. We use secure cloud storage (Supabase) with row-level security to ensure your data is only accessible to you. You can also choose to work entirely locally if you prefer.
+                Security is foundational to our service. We use encrypted connections and industry-standard security protocols to protect all data. We do not sell your data or use it for marketing. For maximum privacy, you can use the "Local Storage" mode to keep data strictly on your device.
+              </p>
+            </div>
+            <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+              <h3 className="text-lg font-bold text-slate-900 mb-2">How do I download my invoice as a PDF?</h3>
+              <p className="text-slate-600">
+                Once you finish entering your details in the editor, simply click the "Download PDF" button. Our system will generate a high-resolution, print-ready document formatted according to your chosen template.
               </p>
             </div>
           </div>
@@ -395,10 +401,10 @@ export default function LandingPage({ onStart, onAbout, onPrivacy, onTerms, onCo
               © 2026 Simple Receipt Generator. All rights reserved.
             </div>
             <a 
-              href="mailto:gomgomtechnologies@gmail.com" 
+              href="mailto:simplereceiptgenerator@gmail.com" 
               className="text-xs text-slate-400 hover:text-indigo-600 transition-colors"
             >
-              gomgomtechnologies@gmail.com
+              simplereceiptgenerator@gmail.com
             </a>
           </div>
           <div className="flex items-center gap-8">

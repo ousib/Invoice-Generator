@@ -50,9 +50,9 @@ export default function AboutPage({ onBack, logoSvg }: AboutPageProps) {
             <div className="w-12 h-12 bg-indigo-100 rounded-2xl flex items-center justify-center text-indigo-600">
               <Zap className="w-6 h-6" />
             </div>
-            <h2 className="text-2xl font-bold text-slate-900">Our Philosophy</h2>
+            <h2 className="text-2xl font-bold text-slate-900">Our Story</h2>
             <p className="text-slate-600 leading-relaxed">
-              Most accounting software is bloated, expensive, and requires a steep learning curve. We stripped away everything except what you actually need: a way to create a professional PDF invoice or receipt in seconds.
+              Simple Receipt Generator was born out of frustration with complex, subscription-heavy billing platforms. We saw freelancers and small business owners spending hours trying to generate simple documents. In 2026, we launched this platform to provide a streamlined experience that respects your time and your budget.
             </p>
           </div>
 
@@ -60,9 +60,9 @@ export default function AboutPage({ onBack, logoSvg }: AboutPageProps) {
             <div className="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center text-green-600">
               <ShieldCheck className="w-6 h-6" />
             </div>
-            <h2 className="text-2xl font-bold text-slate-900">Privacy First</h2>
+            <h2 className="text-2xl font-bold text-slate-900">Why We Are Free</h2>
             <p className="text-slate-600 leading-relaxed">
-              Your data is yours. We offer secure cloud storage (Supabase) so you can access your invoices from any device, protected by row-level security. You can also choose to work entirely locally in your browser for maximum privacy.
+              We believe in democratizing access to business tools. By keeping our platform free, we support the global entrepreneurial ecosystem. We sustain our operations through minimal advertising and sponsorships, ensuring that the tool remains accessible to everyone, from a solo freelancer to a growing startup.
             </p>
           </div>
 
@@ -72,7 +72,7 @@ export default function AboutPage({ onBack, logoSvg }: AboutPageProps) {
             </div>
             <h2 className="text-2xl font-bold text-slate-900">Global Accessibility</h2>
             <p className="text-slate-600 leading-relaxed">
-              Whether you're a market vendor in Lagos, a freelance designer in London, or a consultant in New York, our tool is designed to work for you with multi-currency support and flexible tax settings.
+              Whether you're a market vendor in Lagos, a freelance designer in London, or a consultant in New York, our tool is designed to work for you with multi-currency support and flexible tax settings. We are constantly expanding our localization to serve more regions.
             </p>
           </div>
 
@@ -80,9 +80,9 @@ export default function AboutPage({ onBack, logoSvg }: AboutPageProps) {
             <div className="w-12 h-12 bg-red-100 rounded-2xl flex items-center justify-center text-red-600">
               <Heart className="w-6 h-6" />
             </div>
-            <h2 className="text-2xl font-bold text-slate-900">100% Free</h2>
+            <h2 className="text-2xl font-bold text-slate-900">Commitment to Quality</h2>
             <p className="text-slate-600 leading-relaxed">
-              No subscriptions, no "pro" features, no watermarks. Simple Receipt Generator is a free utility for the global entrepreneurial community.
+              Fast doesn't have to mean generic. We take pride in the design quality of our templates. Every receipt and invoice generated through our platform is professional, clean, and print-ready, helping you build trust with your clients effortlessly.
             </p>
           </div>
         </div>
@@ -113,14 +113,14 @@ export default function AboutPage({ onBack, logoSvg }: AboutPageProps) {
         <div className="flex flex-wrap justify-center gap-6">
           <button onClick={onBack} className="text-sm font-medium text-slate-500 hover:text-indigo-600 transition-colors">Home</button>
           <p className="text-sm font-medium text-slate-900">About Us</p>
-          <a href="mailto:gomgomtechnologies@gmail.com" className="text-sm font-medium text-slate-500 hover:text-indigo-600 transition-colors">Contact</a>
+          <a href="mailto:simplereceiptgenerator@gmail.com" className="text-sm font-medium text-slate-500 hover:text-indigo-600 transition-colors">Contact</a>
         </div>
         <p className="text-slate-400 text-sm max-w-md">© 2026 Simple Receipt Generator. Built for the global small business community. We are dedicated to providing free, high-quality billing tools for entrepreneurs everywhere.</p>
         <a 
-          href="mailto:gomgomtechnologies@gmail.com" 
+          href="mailto:simplereceiptgenerator@gmail.com" 
           className="text-xs text-slate-400 hover:text-indigo-600 transition-colors"
         >
-          gomgomtechnologies@gmail.com
+          simplereceiptgenerator@gmail.com
         </a>
       </footer>
     </div>

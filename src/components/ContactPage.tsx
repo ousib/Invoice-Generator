@@ -60,8 +60,8 @@ export default function ContactPage({ onBack }: ContactPageProps) {
                 </div>
                 <div>
                   <h3 className="font-bold text-slate-900">Email</h3>
-                  <a href="mailto:gomgomtechnologies@gmail.com" className="text-indigo-600 hover:underline">
-                    gomgomtechnologies@gmail.com
+                  <a href="mailto:simplereceiptgenerator@gmail.com" className="text-indigo-600 hover:underline">
+                    simplereceiptgenerator@gmail.com
                   </a>
                 </div>
               </div>

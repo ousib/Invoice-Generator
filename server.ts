@@ -14,6 +14,18 @@ async function startServer() {
     res.sendFile(path.join(process.cwd(), "public", "og-image.jpg"));
   });
 
+  // Explicitly serve ads.txt to ensure it's accessible at the root for AdSense crawl
+  app.get("/ads.txt", (req, res) => {
+    res.setHeader('Content-Type', 'text/plain');
+    res.sendFile(path.join(process.cwd(), "public", "ads.txt"));
+  });
+
+  // Explicitly serve robots.txt
+  app.get("/robots.txt", (req, res) => {
+    res.setHeader('Content-Type', 'text/plain');
+    res.sendFile(path.join(process.cwd(), "public", "robots.txt"));
+  });
+
   app.get("/api/assets", async (req, res) => {
     const fs = await import('fs/promises');
     const path = 'generated_assets.json';

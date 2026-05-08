@@ -587,6 +587,7 @@ export default function App() {
               onTerms={() => navigate('/terms')}
               onContact={() => navigate('/contact')}
               onBlog={() => navigate('/blog')}
+              onBlogWithPost={(slug) => navigate(`/blog/${slug}`)}
               logoSvg={assets.logoSvg} 
             />
           </>

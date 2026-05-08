@@ -74,12 +74,12 @@ interface RecentReceipt {
   data: InvoiceData;
 }
 
-function BlogWrapper({ onBack }: { onBack: () => void }) {
+function BlogWrapper({ onBack, onGenerate }: { onBack: () => void; onGenerate: () => void }) {
   const { slug } = useParams();
   return (
     <>
       <Toaster position="top-center" richColors />
-      <BlogPost slug={slug || ''} onBack={onBack} />
+      <BlogPost slug={slug || ''} onBack={onBack} onGenerate={onGenerate} />
     </>
   );
 }
@@ -640,7 +640,10 @@ export default function App() {
       <Route 
         path="/blog/:slug" 
         element={
-          <BlogWrapper onBack={() => navigate('/blog')} />
+          <BlogWrapper 
+            onBack={() => navigate('/blog')} 
+            onGenerate={() => navigate('/generate-invoice')} 
+          />
         } 
       />
       <Route 

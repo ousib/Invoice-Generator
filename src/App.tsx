@@ -966,13 +966,13 @@ export default function App() {
           <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-8">
             <div className="flex items-center gap-2 text-slate-900 font-bold text-lg">
               <FileText className="w-5 h-5 text-indigo-600" />
-              <h2>Bill To</h2>
+              <h2>{data.type === 'invoice' ? 'Bill To' : 'Customer'}</h2>
             </div>
             <div className="space-y-6">
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Client Name</label>
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{data.type === 'invoice' ? 'Client' : 'Customer'} Name</label>
                 <input 
-                  placeholder="Client or Company Name"
+                  placeholder={data.type === 'invoice' ? "Client or Company Name" : "Customer Name"}
                   value={data.clientName}
                   onChange={(e) => setData(prev => ({ ...prev, clientName: e.target.value }))}
                   className="w-full text-lg font-bold text-slate-900 placeholder:text-slate-200 focus:outline-none border-b-2 border-transparent focus:border-indigo-100 transition-colors pb-1"
@@ -1242,9 +1242,11 @@ export default function App() {
                       </div>
                     </div>
                     <div className="space-y-3">
-                      <p className="text-[11px] font-bold text-indigo-600 uppercase tracking-[0.2em] border-b border-indigo-100 pb-1 inline-block">Bill To</p>
+                      <p className="text-[11px] font-bold text-indigo-600 uppercase tracking-[0.2em] border-b border-indigo-100 pb-1 inline-block">
+                        {data.type === 'invoice' ? 'Bill To' : 'Customer'}
+                      </p>
                       <div className="pl-4">
-                        <p className="font-bold text-slate-900 text-base mb-1">{data.clientName || 'Client Name'}</p>
+                        <p className="font-bold text-slate-900 text-base mb-1">{data.clientName || (data.type === 'invoice' ? 'Client Name' : 'Customer Name')}</p>
                         <div className="text-slate-500 leading-relaxed whitespace-pre-line text-sm">
                           {data.clientAddress}
                           {data.clientEmail && `\n${data.clientEmail}`}
@@ -1335,7 +1337,9 @@ export default function App() {
                   </div>
 
                   <div className="mb-20">
-                    <p className="text-slate-400 text-[10px] uppercase tracking-[0.3em] mb-4">Client</p>
+                    <p className="text-slate-400 text-[10px] uppercase tracking-[0.3em] mb-4">
+                      {data.type === 'invoice' ? 'Client' : 'Customer'}
+                    </p>
                     <div className="text-slate-900">
                       <p className="text-2xl font-bold mb-1">{data.clientName || 'Client Name'}</p>
                       <p className="text-slate-500 text-sm whitespace-pre-line">{data.clientAddress}</p>
@@ -1439,9 +1443,11 @@ export default function App() {
                       </div>
                     </div>
                     <div className="space-y-3">
-                      <p className="text-[11px] font-bold text-indigo-600 uppercase tracking-[0.2em] border-b border-indigo-100 pb-1 inline-block">Bill To</p>
+                      <p className="text-[11px] font-bold text-indigo-600 uppercase tracking-[0.2em] border-b border-indigo-100 pb-1 inline-block">
+                        {data.type === 'invoice' ? 'Bill To' : 'Customer'}
+                      </p>
                       <div className="pl-4">
-                        <p className="font-bold text-slate-900 text-base mb-1">{data.clientName || 'Client Name'}</p>
+                        <p className="font-bold text-slate-900 text-base mb-1">{data.clientName || (data.type === 'invoice' ? 'Client Name' : 'Customer Name')}</p>
                         <div className="text-slate-500 leading-relaxed whitespace-pre-line text-sm">
                           {data.clientAddress}
                           {data.clientEmail && `\n${data.clientEmail}`}
